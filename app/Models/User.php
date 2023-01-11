@@ -58,7 +58,7 @@ class User extends Authenticatable
         'next_of_kin_name' => 'altara',
         'next_of_kin_phone_no' => 'altara',
         'portal_access' => 1,
-    ];
+     ];
 
     /**
      * @throws \Exception

@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Otp;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -17,6 +18,27 @@ use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
+
+    public function allVendors(Request $request)
+    {
+        $vendorQuery = User::query()->whereHas('roles', function (Builder $query) {
+            $query->where('name', 'Vendor');
+        });
+        if ($request->has('full_name')) {
+            $vendorQuery = $vendorQuery->where('full_name', 'LIKE', '%'. $request->full_name .'%');
+        }
+        if ($request->has('phone_number')) {
+            $vendorQuery =  $vendorQuery->where('phone_number', 'LIKE', '%'. $request->phone_number .'%');
+        }
+        if ($request->has('address')) {
+            $vendorQuery =  $vendorQuery->where('address', 'LIKE', '%'. $request->address .'%');
+        }
+        if ($request->has('portal_access')) {
+            $vendorQuery = $vendorQuery->where('portal_access',  $request->portal_access);
+        }
+        $vendors = $vendorQuery->simplePaginate();
+        return $this->respondSuccess(['vendors' => $vendors], 'All vendors fetched successfully');
+    }
 
     /**
      * @throws \Exception
@@ -45,10 +67,9 @@ class AdminController extends Controller
             'otp' =>  $otp,
             'username' => $vendor->phone_number,
         ];
-        
+
         $query  = Arr::query($data);
-        $url = env('FRONTEND_APP_URL'). $query;
-        dd($url);
+        $url = env('FRONTEND_APP_URL') . $query;
         event(new VendorRegisteredEvent($vendor, $otp));
         return $this->respondSuccess(['vendor' => $vendor], 'Vendor created successfully');
     }
