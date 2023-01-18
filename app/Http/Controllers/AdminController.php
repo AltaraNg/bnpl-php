@@ -25,13 +25,13 @@ class AdminController extends Controller
             $query->where('name', 'Vendor');
         });
         if ($request->has('full_name')) {
-            $vendorQuery = $vendorQuery->where('full_name', 'LIKE', '%'. $request->full_name .'%');
+            $vendorQuery = $vendorQuery->where('full_name', 'LIKE', '%' . $request->full_name . '%');
         }
         if ($request->has('phone_number')) {
-            $vendorQuery =  $vendorQuery->where('phone_number', 'LIKE', '%'. $request->phone_number .'%');
+            $vendorQuery =  $vendorQuery->where('phone_number', 'LIKE', '%' . $request->phone_number . '%');
         }
         if ($request->has('address')) {
-            $vendorQuery =  $vendorQuery->where('address', 'LIKE', '%'. $request->address .'%');
+            $vendorQuery =  $vendorQuery->where('address', 'LIKE', '%' . $request->address . '%');
         }
         if ($request->has('portal_access')) {
             $vendorQuery = $vendorQuery->where('portal_access',  $request->portal_access);
@@ -45,6 +45,8 @@ class AdminController extends Controller
      */
     public function createVendor(VendorRequest $request): JsonResponse
     {
+
+
         $role = Role::query()->where('name', 'Vendor')->where('guard_name', 'sanctum')->first();
         $password = Str::random(4);
         $branchID = Branch::query()->where('name', 'like', '%Ikoyi%')->first()->id;
@@ -70,7 +72,7 @@ class AdminController extends Controller
 
         $query  = Arr::query($data);
         $url = env('FRONTEND_APP_URL') . $query;
-        event(new VendorRegisteredEvent($vendor, $otp));
+        event(new VendorRegisteredEvent($vendor, $otp, $url));
         return $this->respondSuccess(['vendor' => $vendor], 'Vendor created successfully');
     }
 
