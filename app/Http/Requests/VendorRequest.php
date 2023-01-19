@@ -37,7 +37,7 @@ class VendorRequest extends FormRequest
         if (request()->method() == 'POST') {
             return [
                 'full_name' => ['required', 'string', 'max:200'],
-                'email' => ['required', 'email', 'max:200', 'unique:users,email'],
+                'email' => ['nullable', 'email', 'max:200', 'unique:users,email'],
                 'phone_number' => ['required', 'string', 'min:11', 'max:200', 'unique:users,phone_number'],
                 'address' => ['required', 'string', 'max:200'],
                 'gender' => ['required', 'string', Rule::in(['male', 'female'])],

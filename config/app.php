@@ -59,6 +59,7 @@ return [
     'asset_url' => env('ASSET_URL'),
 
     'admin_email' => env('APP_ADMIN_MAIL', 'naderounmu@altaracredit.com'),
+    'admin_tech' => env('APP_ADMIN_MAIL', 'admintech@altaracredit.com'),
 
     /*
     |--------------------------------------------------------------------------
