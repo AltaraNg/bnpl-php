@@ -27,6 +27,7 @@ Route::middleware('admin.access')->group(function () {
     Route::patch('update/vendor/{vendor}', [AdminController::class, 'updateVendor']);
     Route::get('view/vendor/{vendor}', [AdminController::class, 'viewVendor']);
     Route::get('deactivate/vendor/{vendor}', [AdminController::class, 'deactivateVendor']);
+    Route::get('reactivate/vendor/{vendor}', [AdminController::class, 'reactivateVendor']);
 });
 Route::post('auth/login', [VendorController::class, 'login'])->name('login');
 Route::post('reset/password', [VendorController::class, 'resetPassword']);

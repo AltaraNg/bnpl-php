@@ -108,6 +108,12 @@ class AdminController extends Controller
         $vendor->save();
         return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor deactivated successfully');
     }
+    public function reactivateVendor(User $vendor): JsonResponse
+    {
+        $vendor->portal_access = 1;
+        $vendor->save();
+        return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor reactivated successfully');
+    }
     // Function to generate OTP
     protected function generateNumericOTP(int $n): string
     {
