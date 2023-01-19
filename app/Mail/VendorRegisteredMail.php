@@ -2,26 +2,31 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Mail\Mailables\Address;
 
 class VendorRegisteredMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public User|Builder|array $vendor;
+    public string $url;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($url, User|Builder|array $vendor)
     {
-        //
+        $this->url = $url;
+        $this->vendor = $vendor;
     }
 
     /**
@@ -46,6 +51,10 @@ class VendorRegisteredMail extends Mailable
     {
         return new Content(
             view: 'emails.vendor-registered',
+            with: [
+                'url' => $this->url,
+                'name' => $this->vendor->full_name,
+            ],
         );
     }
 
