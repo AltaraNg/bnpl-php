@@ -18,17 +18,15 @@ class VendorRegisteredEvent
 
     public User|Builder|array $vendor;
     public string $otp;
-    public string $url;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User|Builder|array $vendor, string $otp, string $url)
+    public function __construct(User|Builder|array $vendor, string $otp = null)
     {
         $this->otp = $otp;
-        $this->url = $url;
         $this->vendor = $vendor;
     }
 

@@ -47,8 +47,8 @@ class VendorRequest extends FormRequest
         if (request()->method() == 'PATCH') {
             return [
                 'full_name' => ['sometimes', 'string', 'max:200'],
-                'email' => ['sometimes', 'email', 'max:200',  Rule::unique('users', 'email')->ignore($this->vendor)],
-                'phone_number' => ['sometimes', 'string', 'min:11', 'max:200', Rule::unique('users', 'phone_number')->ignore($this->vendor)],
+                'email' => ['sometimes', 'email', 'max:200', 'unique:users,email'],
+                'phone_number' => ['sometimes', 'string', 'min:11', 'max:200', 'unique:users,phone_number'],
                 'address' => ['sometimes', 'string', 'max:200'],
                 'gender' => ['sometimes', 'string', Rule::in(['male', 'female'])],
             ];
