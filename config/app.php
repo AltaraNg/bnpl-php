@@ -58,6 +58,8 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'admin_email' => env('APP_ADMIN_MAIL', 'naderounmu@altaracredit.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Events\VendorRegisteredEvent;
+use App\Exceptions\SmsMessageFailedToSendException;
 use App\Http\Requests\VendorRequest;
 use App\Models\Branch;
 use App\Models\Otp;
 use App\Models\User;
 use Carbon\Carbon;
+use Error;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -25,13 +29,13 @@ class AdminController extends Controller
             $query->where('name', 'Vendor');
         });
         if ($request->has('full_name')) {
-            $vendorQuery = $vendorQuery->where('full_name', 'LIKE', '%'. $request->full_name .'%');
+            $vendorQuery = $vendorQuery->where('full_name', 'LIKE', '%' . $request->full_name . '%');
         }
         if ($request->has('phone_number')) {
-            $vendorQuery =  $vendorQuery->where('phone_number', 'LIKE', '%'. $request->phone_number .'%');
+            $vendorQuery =  $vendorQuery->where('phone_number', 'LIKE', '%' . $request->phone_number . '%');
         }
         if ($request->has('address')) {
-            $vendorQuery =  $vendorQuery->where('address', 'LIKE', '%'. $request->address .'%');
+            $vendorQuery =  $vendorQuery->where('address', 'LIKE', '%' . $request->address . '%');
         }
         if ($request->has('portal_access')) {
             $vendorQuery = $vendorQuery->where('portal_access',  $request->portal_access);
@@ -45,32 +49,44 @@ class AdminController extends Controller
      */
     public function createVendor(VendorRequest $request): JsonResponse
     {
-        $role = Role::query()->where('name', 'Vendor')->where('guard_name', 'sanctum')->first();
-        $password = Str::random(4);
-        $branchID = Branch::query()->where('name', 'like', '%Ikoyi%')->first()->id;
-        $otp =  $this->generateNumericOTP(6);
-        $data = [
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address,
-            'gender' => $request->gender,
-            'staff_id' => 'VD/CT/' . Carbon::now()->year . '/' . User::getNextModelId(), //VD => vendor CT =>customer
-            'date_of_appointment' => Carbon::now()->toDateString(),
-            'branch_id' => $branchID,
-            'api_token' => $otp,
-            'password' => Hash::make($password),
-        ];
-        $vendor = User::query()->create($data);
-        $vendor->assignRole($role);
-        $data = [
-            'otp' =>  $otp,
-            'username' => $vendor->phone_number,
-        ];
+        try {
+            DB::beginTransaction();
+            $role = Role::query()->where('name', 'Vendor')->where('guard_name', 'sanctum')->first();
+            $password = Str::random(4);
+            $branchID = Branch::query()->where('name', 'like', '%Ikoyi%')->first()->id;
+            $otp =  $this->generateNumericOTP(6);
+            $data = [
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'address' => $request->address,
+                'gender' => $request->gender,
+                'staff_id' => 'VD/CT/' . Carbon::now()->year . '/' . User::getNextModelId(), //VD => vendor CT =>customer
+                'date_of_appointment' => Carbon::now()->toDateString(),
+                'branch_id' => $branchID,
+                'api_token' => $otp,
+                'password' => Hash::make($password),
+            ];
+            $vendor = User::query()->create($data);
+            $vendor->assignRole($role);
+            $data = [
+                'otp' =>  $otp,
+                'username' => $vendor->phone_number,
+            ];
 
-        $query  = Arr::query($data);
-        $url = env('FRONTEND_APP_URL') . $query;
-        event(new VendorRegisteredEvent($vendor, $otp));
+            $query  = Arr::query($data);
+            $url = env('FRONTEND_APP_URL') . $query;
+            event(new VendorRegisteredEvent($vendor, $otp, $url));
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error($th);
+            if ($th instanceof SmsMessageFailedToSendException) {
+                $this->respondError($th->getMessage());
+            }
+            return $this->respondInternalError('An error occurred while trying create vendor');
+        }
+
         return $this->respondSuccess(['vendor' => $vendor], 'Vendor created successfully');
     }
 
@@ -91,6 +107,12 @@ class AdminController extends Controller
         $vendor->portal_access = 0;
         $vendor->save();
         return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor deactivated successfully');
+    }
+    public function reactivateVendor(User $vendor): JsonResponse
+    {
+        $vendor->portal_access = 1;
+        $vendor->save();
+        return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor reactivated successfully');
     }
     // Function to generate OTP
     protected function generateNumericOTP(int $n): string
