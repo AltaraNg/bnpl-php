@@ -37,7 +37,10 @@ class VendorRegisteredMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address(config('app.admin_email'), 'Altara Credit Ltd'),
+            from: new Address(config('app.admin_tech'), 'Altara Credit Ltd'),
+            cc: [
+                new Address(config('app.admin_tech'), 'Altara Credit Ltd'),
+            ],
             subject: 'Welcome to Altara',
         );
     }
