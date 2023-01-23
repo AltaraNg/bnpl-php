@@ -35,5 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/logout', [VendorController::class, 'logout']);
     Route::post('customers', [CustomerController::class, 'store']);
     Route::get('customers/{telephone}', [CustomerController::class, 'show']);
-    Route::post('orders', [OrderController::class, 'store']);
+    // Route::post('orders', [OrderController::class, 'store']);
+    Route::post('/amortization/preview', [OrderController::class, 'previewAmortization']);
 });
