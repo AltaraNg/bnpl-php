@@ -105,6 +105,7 @@ class AdminController extends Controller
     public function deactivateVendor(User $vendor): JsonResponse
     {
         $vendor->portal_access = 0;
+        $vendor->tokens()->delete();
         $vendor->save();
         return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor deactivated successfully');
     }
