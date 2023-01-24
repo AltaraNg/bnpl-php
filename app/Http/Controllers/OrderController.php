@@ -15,13 +15,38 @@ class OrderController extends Controller
 {
     public  function previewAmortization(OrderRequest $orderRequest)
     {
+        $orderData = $this->orderData($orderRequest);
+        $response =  Http::withHeaders([
+            'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
+        ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/amortization/preview', $orderData);
+        if ($response->object()->status !=  'success') {
+            return $this->respondError($response->object()->message);
+        }
+        return $this->respondSuccess(['plans' => $response->object()->data]);
+    }
+
+    public function storeOrder(OrderRequest $orderRequest)
+    {
+        $orderData = $this->orderData($orderRequest);
+        $response =  Http::withHeaders([
+            'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
+        ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/create/order', $orderData);
+
+        return $response;
+        if ($response->object()->status !=  'success') {
+            return $response->object();
+            return $this->respondError($response->object()->message);
+        }
+        return $this->respondSuccess(['plans' => $response->object()->data]);
+    }
+
+    public function orderData(OrderRequest $orderRequest): array
+    {
         $businessType = BusinessType::query()->where('slug', 'ap_products')->first();
         $orderType = OrderType::query()->where('name', 'Altara Pay')->first();
         $paymentMethod = PaymentMethod::query()->where('name', 'direct-debit')->first();
         $saleCategory = SalesCategory::query()->first();
-        $response =  Http::withHeaders([
-            'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
-        ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/amortization/preview', [
+        return [
             "customer_id" => $orderRequest->customer_id,
             "bank_id" => 1,
             "business_type_id" => $businessType->id,
@@ -35,17 +60,8 @@ class OrderController extends Controller
             "repayment_duration_id" => $orderRequest->repayment_duration_id,
             "repayment" => $orderRequest->repayment,
             "down_payment" => $orderRequest->down_payment,
-            "financed_by" => "altara",
+            "financed_by" => Order::ALTARA_BNPL,
             "product_price" => $orderRequest->product_price,
-        ]);
-        if ($response->object()->status !=  'success') {
-            return $this->respondError($response->object()->message);
-        }
-        return $this->respondSuccess(['plans' => $response->object()->data]);
-    }
-
-    public function storeOrder(OrderRequest $orderRequest)
-    {
-        
+        ];
     }
 }
