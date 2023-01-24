@@ -34,7 +34,6 @@ class OrderController extends Controller
 
         return $response;
         if ($response->object()->status !=  'success') {
-            return $response->object();
             return $this->respondError($response->object()->message);
         }
         return $this->respondSuccess(['plans' => $response->object()->data]);
