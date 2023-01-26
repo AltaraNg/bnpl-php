@@ -24,20 +24,15 @@ class OrderRequest extends FormRequest
      */
     public function rules()
     {
-        $id = self::getCustomRepaymentCycleId();
+        // $id = self::getCustomRepaymentCycleId();
         return [
             'customer_id' => ['required', 'exists:customers,id'],
-            'inventory_id' => ['required', 'exists:inventories,id'],
             'repayment' => ['required', 'numeric'],
-            'serial_number' => ['sometimes', 'string'],
-            'sales_category_id' => ['required', 'exists:sales_categories,id'],
             'repayment_duration_id' => ['required', 'exists:repayment_durations,id'],
             'repayment_cycle_id' => ['required', 'exists:repayment_cycles,id'],
             'down_payment' => ['required', 'numeric'],
             'product_price' => ['required', 'numeric'],
             'down_payment_rate_id' => ['sometimes', 'exists:down_payment_rates,id'],
-            'order_type_id' => ['sometimes', 'exists:order_types,id'],
-            'discount_id' => ['sometimes', 'exists:discounts,id'],
         ];
     }
 

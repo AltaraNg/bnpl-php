@@ -11,6 +11,8 @@ class Order extends Model
 {
     use HasFactory;
     protected $with = ['amortizations'];
+
+    const ALTARA_BNPL ='altara-bnpl';
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
