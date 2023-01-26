@@ -20,6 +20,16 @@ class OrderController extends Controller
             'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
         ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/amortization/preview', $orderData);
         if ($response->object()->status !=  'success') {
+            if ($response->json('data') && $response->json('data.errors')) {
+                return $this->respondCreated(
+                    [
+                        'message' => $response->json('message'),
+                        'errors' => $response->json('data.errors')
+                    ],
+                    $response->json('message'),
+                    422
+                );
+            }
             return $this->respondError($response->object()->message);
         }
         return $this->respondSuccess(['plans' => $response->object()->data]);
@@ -32,8 +42,17 @@ class OrderController extends Controller
             'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
         ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/create/order', $orderData);
 
-        return $response;
         if ($response->object()->status !=  'success') {
+            if ($response->json('data') && $response->json('data.errors')) {
+                return $this->respondCreated(
+                    [
+                        'message' => $response->json('message'),
+                        'errors' => $response->json('data.errors')
+                    ],
+                    $response->json('message'),
+                    422
+                );
+            }
             return $this->respondError($response->object()->message);
         }
         return $this->respondSuccess(['plans' => $response->object()->data]);

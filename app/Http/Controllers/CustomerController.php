@@ -55,12 +55,12 @@ class CustomerController extends Controller
     private function setNotNullableFields()
     {
         return [
-            'registration_channel' => 'bnlp',
+            'registration_channel' => 'bnpl',
             'first_name' => 'N/A',
             'last_name' => 'N/A',
             'on_boarded' => false,
             'add_street' => 'N/A',
-            'employee_name' => 'bnlp',
+            'employee_name' => 'bnpl',
             'employee_id' => 1,
             'date_of_registration' => Carbon::now(),
             'add_nbstop' => 'N/A',
