@@ -82,8 +82,9 @@ class AdminController extends Controller
             DB::rollBack();
             Log::error($th);
             if ($th instanceof SmsMessageFailedToSendException) {
-                $this->respondError($th->getMessage());
+              return  $this->respondError($th->getMessage());
             }
+            Log::info(get_class($th));
             return $this->respondInternalError('An error occurred while trying create vendor');
         }
 
