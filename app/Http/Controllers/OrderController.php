@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\BusinessType;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
+use App\Models\BnplVendorProduct;
 use App\Models\OrderType;
 use App\Models\PaymentMethod;
 use App\Models\SalesCategory;
@@ -64,8 +65,15 @@ class OrderController extends Controller
         $orderType = OrderType::query()->where('name', 'Altara Pay')->first();
         $paymentMethod = PaymentMethod::query()->where('name', 'direct-debit')->first();
         $saleCategory = SalesCategory::query()->first();
+        $product = BnplVendorProduct::query()->updateOrCreate(
+            [
+                'name' => $orderRequest->product_name,
+                'vendor_id' => $orderRequest->user()->id,
+            ],
+            ['price' => $orderRequest->product_price]
+        );
         return [
-            "bnpl_vendor_product_id" => 1,
+            "bnpl_vendor_product_id" => $product->id,
             "customer_id" => $orderRequest->customer_id,
             "bank_id" => 1,
             "business_type_id" => $businessType->id,
