@@ -32,7 +32,8 @@ class OrderRequest extends FormRequest
             'repayment_cycle_id' => ['required', 'exists:repayment_cycles,id'],
             'down_payment' => ['required', 'numeric'],
             'product_price' => ['required', 'numeric'],
-            'down_payment_rate_id' => ['sometimes', 'exists:down_payment_rates,id'],
+            'product_name' => ['required', 'string'],
+            'down_payment_rate_id' => ['sometimes','integer', 'exists:down_payment_rates,id'],
         ];
     }
 
