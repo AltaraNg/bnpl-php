@@ -33,7 +33,6 @@ class OrderRequest extends FormRequest
             'down_payment' => ['required', 'numeric'],
             'product_price' => ['required', 'numeric'],
             'down_payment_rate_id' => ['sometimes','integer', 'exists:down_payment_rates,id'],
-            'bnpl_vendor_product_id' => ['sometimes', 'integer','exists:bnpl_vendor_products,id']
         ];
     }
 
