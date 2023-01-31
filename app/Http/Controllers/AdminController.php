@@ -49,45 +49,33 @@ class AdminController extends Controller
      */
     public function createVendor(VendorRequest $request): JsonResponse
     {
-        try {
-            DB::beginTransaction();
-            $role = Role::query()->where('name', 'Vendor')->where('guard_name', 'sanctum')->first();
-            $password = Str::random(4);
-            $branchID = Branch::query()->where('name', 'like', '%Ikoyi%')->first()->id;
-            $otp =  $this->generateNumericOTP(6);
-            $data = [
-                'full_name' => $request->full_name,
-                'email' => $request->email,
-                'phone_number' => $request->phone_number,
-                'address' => $request->address,
-                'gender' => $request->gender,
-                'staff_id' => 'VD/CT/' . Carbon::now()->year . '/' . User::getNextModelId(), //VD => vendor CT =>customer
-                'date_of_appointment' => Carbon::now()->toDateString(),
-                'branch_id' => $branchID,
-                'api_token' => $otp,
-                'password' => Hash::make($password),
-            ];
-            $vendor = User::query()->create($data);
-            $vendor->assignRole($role);
-            $data = [
-                'otp' =>  $otp,
-                'username' => $vendor->phone_number,
-            ];
 
-            $query  = Arr::query($data);
-            $url = env('FRONTEND_APP_URL') . $query;
-            event(new VendorRegisteredEvent($vendor, $otp, $url));
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error($th);
-            if ($th instanceof SmsMessageFailedToSendException) {
-              return  $this->respondError($th->getMessage());
-            }
-            Log::info(get_class($th));
-            return $this->respondInternalError('An error occurred while trying create vendor');
-        }
+        $role = Role::query()->where('name', 'Vendor')->where('guard_name', 'sanctum')->first();
+        $password = Str::random(4);
+        $branchID = Branch::query()->where('name', 'like', '%Ikoyi%')->first()->id;
+        $otp =  $this->generateNumericOTP(6);
+        $data = [
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'staff_id' => 'VD/CT/' . Carbon::now()->year . '/' . User::getNextModelId(), //VD => vendor CT =>customer
+            'date_of_appointment' => Carbon::now()->toDateString(),
+            'branch_id' => $branchID,
+            'api_token' => $otp,
+            'password' => Hash::make($password),
+        ];
+        $vendor = User::query()->create($data);
+        $vendor->assignRole($role);
+        $data = [
+            'otp' =>  $otp,
+            'username' => $vendor->phone_number,
+        ];
 
+        $query  = Arr::query($data);
+        $url = env('FRONTEND_APP_URL') . $query;
+        event(new VendorRegisteredEvent($vendor, $otp, $url));
         return $this->respondSuccess(['vendor' => $vendor], 'Vendor created successfully');
     }
 

@@ -55,7 +55,7 @@ class OrderController extends Controller
             }
             return $this->respondError($response->object()->message);
         }
-        return $this->respondSuccess(['plans' => $response->object()->data]);
+        return $this->respondSuccess(['order' => $response->object()->data]);
     }
 
     public function orderData(OrderRequest $orderRequest): array
@@ -65,6 +65,7 @@ class OrderController extends Controller
         $paymentMethod = PaymentMethod::query()->where('name', 'direct-debit')->first();
         $saleCategory = SalesCategory::query()->first();
         return [
+            "bnpl_vendor_product_id" => 1,
             "customer_id" => $orderRequest->customer_id,
             "bank_id" => 1,
             "business_type_id" => $businessType->id,
