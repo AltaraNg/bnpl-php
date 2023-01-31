@@ -95,7 +95,7 @@ class OrderController extends Controller
     public function fetchProducts(Request $request)
     {
         $productsQuery = BnplVendorProduct::query()->where('status', true)->where('vendor_id', $request->user()->id);
-        if (strlen($request->query('product_name'))) {
+        if (strlen($request->query('product_name')) > 0) {
             $productsQuery =   $productsQuery->where('name', 'LIKE', '%' . $request->query('product_name') . '%');
         }
         return $this->respondSuccess(['products' => $productsQuery->simplePaginate()], 'Products fetched');
