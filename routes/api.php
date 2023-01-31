@@ -37,4 +37,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('customers/{telephone}', [CustomerController::class, 'show']);
     Route::post('store/order', [OrderController::class, 'storeOrder']);
     Route::post('/amortization/preview', [OrderController::class, 'previewAmortization']);
+    Route::get('fetch/products', [OrderController::class, 'fetchProducts']);
 });

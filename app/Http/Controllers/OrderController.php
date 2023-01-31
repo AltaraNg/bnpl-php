@@ -91,4 +91,13 @@ class OrderController extends Controller
             "product_price" => $orderRequest->product_price,
         ];
     }
+
+    public function fetchProducts(Request $request)
+    {
+        $productsQuery = BnplVendorProduct::query()->where('status', true)->where('vendor_id', $request->user()->id);
+        if (strlen($request->query('product_name'))) {
+            $productsQuery =   $productsQuery->where('name', 'LIKE', '%' . $request->query('product_name') . '%');
+        }
+        return $this->respondSuccess(['products' => $productsQuery->simplePaginate()], 'Products fetched');
+    }
 }
