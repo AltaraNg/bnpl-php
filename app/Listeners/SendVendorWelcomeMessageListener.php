@@ -55,10 +55,6 @@ class SendVendorWelcomeMessageListener
             }
         } catch (\Throwable $th) {
             Log::error($th);
-            // if ($th instanceof SmsMessageFailedToSendException) {
-            //     throw new SmsMessageFailedToSendException($th->getMessage());
-            // }
-            // throw new Exception($th->getMessage());
         }
 
         try {
