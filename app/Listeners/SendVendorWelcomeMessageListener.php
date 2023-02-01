@@ -53,15 +53,16 @@ class SendVendorWelcomeMessageListener
                     throw new SmsMessageFailedToSendException($statusDescription);
                 }
             }
+        } catch (\Throwable $th) {
+            Log::error($th);
+        }
+
+        try {
             if ($vendor->email && env('APP_SEND_EMAIL')) {
                 Mail::to($vendor)->send(new VendorRegisteredMail($url, $vendor));
             }
         } catch (\Throwable $th) {
             Log::error($th);
-            // if ($th instanceof SmsMessageFailedToSendException) {
-            //     throw new SmsMessageFailedToSendException($th->getMessage());
-            // }
-            // throw new Exception($th->getMessage());
         }
     }
 
