@@ -10,10 +10,21 @@ use App\Models\BnplVendorProduct;
 use App\Models\OrderType;
 use App\Models\PaymentMethod;
 use App\Models\SalesCategory;
+use App\Repositories\Eloquent\Repository\OrderRepository;
 use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
+
+    public function __construct(private readonly OrderRepository $orderRepository)
+    {
+    }
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $orders = $this->orderRepository->myOrders($user->id);
+        return $this->respondSuccess(['orders' => $orders], 'Orders fetched successfully');
+    }
     public  function previewAmortization(OrderRequest $orderRequest)
     {
         $orderData = $this->orderData($orderRequest);

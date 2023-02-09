@@ -38,4 +38,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('store/order', [OrderController::class, 'storeOrder']);
     Route::post('/amortization/preview', [OrderController::class, 'previewAmortization']);
     Route::get('fetch/products', [OrderController::class, 'fetchProducts']);
+    Route::get('vendor/orders', [OrderController::class, 'index']);
 });

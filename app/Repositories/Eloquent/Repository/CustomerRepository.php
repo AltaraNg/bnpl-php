@@ -21,9 +21,11 @@ class CustomerRepository extends BaseRepository
         return $this->model->query()->with('orders', 'orders.amortizations')->where('telephone', $telephone)->first();
     }
 
+    public function customers(int $vendor_id)
+    {
+        return $this->model::query()->where('user_id', $vendor_id)->simplePaginate();
+    }
     public function filter()
     {
-
     }
 }
-
