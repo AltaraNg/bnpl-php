@@ -12,6 +12,8 @@ class Order extends Model
     use HasFactory;
     protected $with = ['amortizations'];
 
+    protected $table= 'new_orders';
+
     const ALTARA_BNPL ='altara-bnpl';
     public function product(): BelongsTo
     {

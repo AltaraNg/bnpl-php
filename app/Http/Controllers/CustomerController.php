@@ -13,6 +13,13 @@ class CustomerController extends Controller
     {
     }
 
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $customers = $this->customerRepository->customers($user->id);
+        return $this->respondSuccess(['customers' => $customers], 'Vendor customers fetched');
+    }
+
     public function show(Request $request, string $telephone)
     {
         $customer  = $this->customerRepository->findByTelephone($telephone);
