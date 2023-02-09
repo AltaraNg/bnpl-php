@@ -73,4 +73,13 @@ class User extends Authenticatable
         $id = DB::select("SHOW TABLE STATUS LIKE '{$tableName}'");
         return $id[0]->Auto_increment;
     }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'owner_id', 'id');
+    }
 }
