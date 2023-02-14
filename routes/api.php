@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CreditCheckerVerificationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\VendorController;
@@ -28,7 +29,6 @@ Route::middleware('admin.access')->group(function () {
     Route::get('view/vendor/{vendor}', [AdminController::class, 'viewVendor']);
     Route::get('deactivate/vendor/{vendor}', [AdminController::class, 'deactivateVendor']);
     Route::get('reactivate/vendor/{vendor}', [AdminController::class, 'reactivateVendor']);
-    Route::post('/update/credit/checker/status/{creditCheckerVerification}', [AdminController::class, 'updateCreditCheckerVerificationStatus']);
 });
 Route::post('auth/login', [VendorController::class, 'login'])->name('login');
 Route::post('reset/password', [VendorController::class, 'resetPassword']);
@@ -40,4 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/amortization/preview', [OrderController::class, 'previewAmortization']);
     Route::get('fetch/products', [OrderController::class, 'fetchProducts']);
     Route::get('vendor/orders', [OrderController::class, 'index']);
+
+    Route::post('initiate/credit/check', [CreditCheckerVerificationController::class, 'store']);
+    Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
 });

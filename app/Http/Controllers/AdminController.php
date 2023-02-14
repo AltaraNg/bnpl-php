@@ -6,7 +6,6 @@ use App\Events\VendorRegisteredEvent;
 use App\Exceptions\SmsMessageFailedToSendException;
 use App\Http\Requests\VendorRequest;
 use App\Models\Branch;
-use App\Models\CreditCheckerVerification;
 use App\Models\Otp;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
@@ -106,16 +104,7 @@ class AdminController extends Controller
         $vendor->save();
         return $this->respondSuccess(['vendor' => $vendor->refresh()], 'Vendor reactivated successfully');
     }
-    public function updateCreditCheckerVerificationStatus(Request $request,CreditCheckerVerification $creditCheckerVerification)
-    {
-        $this->validate($request, [
-            'status' => ['required', 'string', Rule::in(CreditCheckerVerification::STATUSES)],
-            'reason' => ['sometimes', 'string'],
-        ]);
-        $creditCheckerVerification->status = $request->input('status');
-        $creditCheckerVerification->reason = $request->input('reason', $creditCheckerVerification->reason);
-        return $this->sendSuccess([], 'Credit check status updated successfully');
-    }
+    
     // Function to generate OTP
     protected function generateNumericOTP(int $n): string
     {

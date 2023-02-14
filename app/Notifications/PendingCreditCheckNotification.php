@@ -52,13 +52,16 @@ class PendingCreditCheckNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->view('pending-credit-check', [
-            'customer_name' => $this->customer->first_name . ' ' . $this->customer->last_name,
+        return (new MailMessage)->view('emails.pending-credit-check', [
+            
+            'vendor_id' => $this->vendor->id,
             'vendor_name' => $this->vendor->full_name,
-            'product_name' => $this->product->product_name,
             'vendor_phone_number' => $this->vendor->phone_number,
+            'customer_id' => $this->customer->id,
             'customer_phone_number' => $this->customer->telephone,
-            'product_price' => $this->product->product_price,
+            'customer_name' => $this->customer->first_name . ' ' . $this->customer->last_name,
+            'product_name' => $this->product->name,
+            'product_price' => $this->product->price,
             'url' => url('pending/credit/check/{id}', ['id' => $this->creditCheckVerification->id])
         ]);
     }

@@ -40,7 +40,7 @@ class CreditCheckerVerificationController extends Controller
         } else {
             $creditCheckerVerification = CreditCheckerVerification::create([
                 'customer_id' => $request->input('customer_id'),
-                'initiated_by' => request()->id(),
+                'initiated_by' => request()->user()->id,
                 'bnpl_vendor_product_id' => $product->id,
             ]);
         }

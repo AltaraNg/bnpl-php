@@ -15,14 +15,19 @@
     </p>
 
     <ul style="list-style: none;">
-        <li>Vendor Name: {{ $vendor_name }}</li>
-        <li>Vendor Phone Number: {{ $vendor_phone_number }}</li>
-        <li></li>
-        <li>Customer Name: {{ $customer_name }}</li>
-        <li>Customer Phone Number: {{ $customer_phone_number }}</li>
-        <li></li>
         <li>Product Name: {{ $product_name }}</li>
         <li>Product Price: {{ $product_price }}</li>
+
+        <li></li>
+        
+        <li>Vendor Name: {{ $vendor_name }}</li>
+        <li>Vendor Phone Number: {{ $vendor_phone_number }}</li>
+
+        <li></li>
+
+        <li>Customer Name: {{ $customer_name }}</li>
+        <li>Customer Phone Number: {{ $customer_phone_number }}</li>
+        
         <li></li>
     </ul>
     <p>
