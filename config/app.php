@@ -60,6 +60,7 @@ return [
 
     'admin_email' => env('APP_ADMIN_MAIL', 'naderounmu@altaracredit.com'),
     'admin_tech' => env('APP_ADMIN_TECH_MAIL', 'admintech@altaracredit.com'),
+    'credit_checker_mail' => env('CREDIT_CHECKER_MAIL', 'admintech@altaracredit.com'),
 
     /*
     |--------------------------------------------------------------------------

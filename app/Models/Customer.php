@@ -22,4 +22,14 @@ class Customer extends Model
     {
         return $this->hasOne(Verification::class)->withDefault();
     }
+
+    public function creditCheckerVerifications()
+    {
+       return $this->hasMany(CreditCheckerVerification::class, 'customer_id');
+    }
+
+    public function latestCreditCheckerVerifications()
+    {
+       return $this->hasOne(CreditCheckerVerification::class, 'customer_id')->latestOfMany();
+    }
 }
