@@ -23,7 +23,9 @@ class CustomerRepository extends BaseRepository
 
     public function customers(int $vendor_id)
     {
-        return $this->model::query()->where('user_id', $vendor_id)->simplePaginate();
+        return $this->model::query()->when(request('telephone'), function ($query) {
+            $query->where('telephone', 'LIKE', '%' . request('telephone') . '%');
+        })->where('user_id', $vendor_id)->simplePaginate();
     }
     public function filter()
     {
