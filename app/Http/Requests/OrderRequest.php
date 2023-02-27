@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\RepaymentCycle;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OrderRequest extends FormRequest
 {
@@ -34,6 +35,16 @@ class OrderRequest extends FormRequest
             'product_price' => ['required', 'numeric'],
             'product_name' => ['required', 'string'],
             'down_payment_rate_id' => ['sometimes','integer', 'exists:down_payment_rates,id'],
+            'guarantors' => ['sometimes', 'array', 'min:1'],
+            'guarantors.*.first_name' => ['required', 'string', 'max:200'],
+            'guarantors.*.last_name' => ['required', 'string', 'max:200'],
+            'guarantors.*.email' => ['sometimes', 'email', 'max:200'],
+            'guarantors.*.home_address' => ['sometimes', 'string', 'max:200'],
+            'guarantors.*.work_address' => ['sometimes', 'string', 'max:200'],
+            'guarantors.*.phone_number' => ['required', 'string', 'max:14'],
+            'guarantors.*.gender' => ['sometimes', 'string', Rule::in(['male', 'female'])],
+            'guarantors.*.relationship' => ['sometimes', 'string'],
+            'guarantors.*.occupation' => ['sometimes', 'string'],
         ];
     }
 
