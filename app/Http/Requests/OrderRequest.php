@@ -39,7 +39,7 @@ class OrderRequest extends FormRequest
             'guarantors.*.first_name' => ['required', 'string', 'max:200'],
             'guarantors.*.last_name' => ['required', 'string', 'max:200'],
             'guarantors.*.email' => ['sometimes', 'email', 'max:200'],
-            'guarantors.*.home_address' => ['sometimes', 'string', 'max:200'],
+            'guarantors.*.home_address' => ['required', 'string', 'max:200'],
             'guarantors.*.work_address' => ['sometimes', 'string', 'max:200'],
             'guarantors.*.phone_number' => ['required', 'string', 'max:14'],
             'guarantors.*.gender' => ['sometimes', 'string', Rule::in(['male', 'female'])],
