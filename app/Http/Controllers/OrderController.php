@@ -70,21 +70,6 @@ class OrderController extends Controller
             }
             return $this->respondError($response->object()->message);
         }
-        $guarantors  = GuarantorDto::fromOrderApiRequest($orderRequest);
-        foreach ($guarantors as $key => $guarantor) {
-            $guarantorDto  = GuarantorDto::fromSelf($guarantor);
-            Guarantor::query()->updateOrCreate(
-                [
-                    'customer_id' => $guarantorDto->customer_id,
-                    'phone_number' => $guarantorDto->phone_number
-                ],
-                [
-                    'first_name' => $guarantorDto->first_name,
-                    'last_name' => $guarantorDto->last_name,
-                    'home_address' => $guarantorDto->home_address,
-                ]
-            );
-        }
 
         return $this->respondSuccess(['order' => $response->object()->data]);
     }

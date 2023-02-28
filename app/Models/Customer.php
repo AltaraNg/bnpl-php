@@ -35,6 +35,6 @@ class Customer extends Model
 
     public function guarantors()
     {
-        $this->hasMany(Guarantor::class, 'customer_id');
+       return $this->hasMany(Guarantor::class, 'customer_id');
     }
 }
