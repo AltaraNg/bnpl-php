@@ -11,7 +11,7 @@ class Customer extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $with = ['orders'];
+    protected $with = ['orders', 'guarantors'];
     
     public function orders(): HasMany
     {
@@ -31,5 +31,10 @@ class Customer extends Model
     public function latestCreditCheckerVerifications()
     {
        return $this->hasOne(CreditCheckerVerification::class, 'customer_id')->latestOfMany();
+    }
+
+    public function guarantors()
+    {
+       return $this->hasMany(Guarantor::class, 'customer_id');
     }
 }

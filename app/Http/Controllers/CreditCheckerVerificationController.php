@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTransferObject\GuarantorDto;
 use App\Http\Requests\OrderRequest;
 use App\Models\BnplVendorProduct;
 use App\Models\CreditCheckerVerification;
 use App\Models\Customer;
+use App\Models\Guarantor;
 use App\Notifications\PendingCreditCheckNotification;
 use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
@@ -25,6 +27,22 @@ class CreditCheckerVerificationController extends Controller
     {
 
         $customer = $this->customerRepository->findById($request->input('customer_id'));
+
+        $guarantors  = GuarantorDto::fromOrderApiRequest($request);
+        foreach ($guarantors as $key => $guarantor) {
+            $guarantorDto  = GuarantorDto::fromSelf($guarantor);
+            Guarantor::query()->updateOrCreate(
+                [
+                    'customer_id' => $guarantorDto->customer_id,
+                    'phone_number' => $guarantorDto->phone_number
+                ],
+                [
+                    'first_name' => $guarantorDto->first_name,
+                    'last_name' => $guarantorDto->last_name,
+                    'home_address' => $guarantorDto->home_address,
+                ]
+            );
+        }
         /** @var User $vendor */
         $vendor = auth()->user();
 

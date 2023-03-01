@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTransferObject\GuarantorDto;
 use App\Models\Order;
 use App\Models\BusinessType;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
 use App\Models\BnplVendorProduct;
+use App\Models\Guarantor;
 use App\Models\OrderType;
 use App\Models\PaymentMethod;
 use App\Models\SalesCategory;
@@ -49,6 +51,7 @@ class OrderController extends Controller
 
     public function storeOrder(OrderRequest $orderRequest)
     {
+
         $orderData = $this->orderData($orderRequest);
         $response =  Http::withHeaders([
             'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
@@ -67,6 +70,7 @@ class OrderController extends Controller
             }
             return $this->respondError($response->object()->message);
         }
+
         return $this->respondSuccess(['order' => $response->object()->data]);
     }
 
