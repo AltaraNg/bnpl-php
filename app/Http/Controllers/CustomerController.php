@@ -63,8 +63,6 @@ class CustomerController extends Controller
     {
         return [
             'registration_channel' => 'bnpl',
-            'first_name' => 'N/A',
-            'last_name' => 'N/A',
             'on_boarded' => false,
             'add_street' => 'N/A',
             'employee_name' => 'bnpl',
@@ -72,8 +70,6 @@ class CustomerController extends Controller
             'date_of_registration' => Carbon::now(),
             'add_nbstop' => 'N/A',
             'add_houseno' => 'N/A',
-            'city' => 'N/A',
-            'state' => 'N/A',
             'gender' => 'N/A',
             'date_of_birth' => 'N/A',
             'civil_status' => 'N/A',
