@@ -60,6 +60,9 @@ class CreditCheckerVerificationController extends Controller
                 'customer_id' => $request->input('customer_id'),
                 'initiated_by' => request()->user()->id,
                 'bnpl_vendor_product_id' => $product->id,
+                'repayment_duration_id' => $request->input('repayment_duration_id'),
+                'repayment_cycle_id' => $request->input('repayment_cycle_id'),
+                'down_payment_rate_id' => $request->input('down_payment_rate_id')
             ]);
         }
         Notification::route('mail', config('app.credit_checker_mail'))->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
