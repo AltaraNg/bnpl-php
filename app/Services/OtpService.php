@@ -14,7 +14,7 @@ class OtpService
 
     public function createOtp($identifier)
     {
-       
+
         $this->deleteOldOtps();
         $otp = Otp::where('identifier', $identifier)->first();
         if ($otp == null) {
@@ -54,7 +54,7 @@ class OtpService
         if (!$otp) {
             return (object)[
                 'status' => false,
-                'message' =>'Otp not found',
+                'message' => 'Otp not found',
             ];
         }
 
@@ -66,6 +66,8 @@ class OtpService
         }
 
         if ($otp->token == $token) {
+            $otp->expired = true;
+            $otp->update();
             return (object)[
                 'status' => true,
                 'message' => 'OTP is valid',
