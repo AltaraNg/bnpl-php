@@ -25,7 +25,7 @@ class CustomerRepository extends BaseRepository
     {
         return $this->model::query()->when(request('telephone'), function ($query) {
             $query->where('telephone', 'LIKE', '%' . request('telephone') . '%');
-        })->where('user_id', $vendor_id)->simplePaginate();
+        })->latest('created_at')->where('user_id', $vendor_id)->simplePaginate();
     }
     public function filter()
     {
