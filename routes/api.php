@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CreditCheckerVerificationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('fetch/products', [OrderController::class, 'fetchProducts']);
     Route::get('vendor/orders', [OrderController::class, 'index']);
 
+    Route::post('generate/otp', [OtpController::class, 'generateOtp']);
+    Route::post('validate/otp', [OtpController::class, 'validateOtp']);
+    
     Route::post('initiate/credit/check', [CreditCheckerVerificationController::class, 'store']);
     Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
 });

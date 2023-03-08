@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\VendorRegisteredEvent;
 use App\Exceptions\SmsMessageFailedToSendException;
 use App\Mail\VendorRegisteredMail;
+use App\Services\SendSmsService;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,7 +22,7 @@ class SendVendorWelcomeMessageListener
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(public readonly SendSmsService $sendSmsService)
     {
         //
     }
@@ -41,17 +42,7 @@ class SendVendorWelcomeMessageListener
         //send message
         try {
             if ($vendor->phone_number) {
-                $response =  Http::withHeaders([
-                    'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
-                ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/send/message', [
-                    'phone_number' => $this->appendPrefix($vendor->phone_number),
-                    'message' => $message,
-                ]);
-                $statusName = $response->json()['data']['response']['messages'][0]['status']['groupName'];
-                $statusDescription = $response->json()['data']['response']['messages'][0]['status']['description'];
-                if ($statusName !== 'Success' || $statusDescription != "Successful, Message was sent") {
-                    throw new SmsMessageFailedToSendException($statusDescription);
-                }
+                $this->sendSmsService->sendMessage($vendor->phone_number, $message);
             }
         } catch (\Throwable $th) {
             Log::error($th);
@@ -64,17 +55,5 @@ class SendVendorWelcomeMessageListener
         } catch (\Throwable $th) {
             Log::error($th);
         }
-    }
-
-    private function appendPrefix(string $number)
-    {
-        if (!$number) return '';
-        $pre = '234';
-        if ($number[0] == 0) {
-            return $pre . substr($number, 1);
-        } elseif (substr($number, 0, 3) == $pre) {
-            return $number;
-        }
-        return $pre . $number;
     }
 }
