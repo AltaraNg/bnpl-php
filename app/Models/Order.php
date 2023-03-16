@@ -20,6 +20,11 @@ class Order extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function bnplProduct(): BelongsTo
+    {
+        return $this->belongsTo(BnplVendorProduct::class, 'bnpl_vendor_product_id');
+    }
+
     public function amortizations(): HasMany
     {
         return $this->hasMany(Amortization::class, 'new_order_id');
