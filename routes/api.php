@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CreditCheckerVerificationController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\VendorController;
@@ -48,4 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('initiate/credit/check', [CreditCheckerVerificationController::class, 'store']);
     Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
+
+    Route::get('get/dashboard/data', [DashboardController::class, 'dashboard']);
 });
