@@ -18,7 +18,9 @@ class CustomerRepository extends BaseRepository
     }
     public function findByTelephone(string $telephone): ?Model
     {
-        return $this->model->query()->with('orders', 'orders.amortizations')->where('telephone', $telephone)->first();
+        return $this->model->query()->with(['orders' => function ($query) {
+            $query->where('bnpl_vendor_product_id', '<>', null);
+        }, 'orders.amortizations', 'orders.bnplProduct'])->where('telephone', $telephone)->first();
     }
 
     public function customers(int $vendor_id)
