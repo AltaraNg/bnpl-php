@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     use HasFactory;
-    protected $with = ['amortizations'];
+    protected $with = ['amortizations',  'customer:id,first_name,last_name,area_address,telephone,email'];
 
     protected $table= 'new_orders';
 
@@ -23,6 +23,21 @@ class Order extends Model
     public function bnplProduct(): BelongsTo
     {
         return $this->belongsTo(BnplVendorProduct::class, 'bnpl_vendor_product_id');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     public function amortizations(): HasMany

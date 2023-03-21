@@ -20,14 +20,14 @@ class CustomerRepository extends BaseRepository
     {
         return $this->model->query()->with(['orders' => function ($query) {
             $query->where('bnpl_vendor_product_id', '<>', null);
-        }, 'orders.amortizations', 'orders.bnplProduct'])->where('telephone', $telephone)->first();
+        }, 'orders.amortizations', 'orders.bnplProduct', 'orders.vendor', 'orders.branch'])->where('telephone', $telephone)->first();
     }
 
     public function customers(int $vendor_id)
     {
         return $this->model::query()->when(request('telephone'), function ($query) {
             $query->where('telephone', 'LIKE', '%' . request('telephone') . '%');
-        })->latest('created_at')->where('user_id', $vendor_id)->simplePaginate();
+        })->with('orders')->latest('created_at')->where('user_id', $vendor_id)->simplePaginate();
     }
     public function filter()
     {
