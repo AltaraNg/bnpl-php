@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     use HasFactory;
-    protected $with = ['amortizations',  'customer:id,first_name,last_name,area_address'];
+    protected $with = ['amortizations',  'customer:id,first_name,last_name,area_address,telephone,email'];
 
     protected $table= 'new_orders';
 
