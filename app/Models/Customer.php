@@ -11,7 +11,7 @@ class Customer extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $with = ['orders', 'guarantors', 'latestCreditCheckerVerifications'];
+    protected $with = ['guarantors', 'latestCreditCheckerVerifications'];
 
     public function orders(): HasMany
     {
