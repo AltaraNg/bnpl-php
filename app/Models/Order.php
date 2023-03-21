@@ -25,6 +25,11 @@ class Order extends Model
         return $this->belongsTo(BnplVendorProduct::class, 'bnpl_vendor_product_id');
     }
 
+    public function merchant()
+    {
+        
+    }
+
     public function amortizations(): HasMany
     {
         return $this->hasMany(Amortization::class, 'new_order_id');
