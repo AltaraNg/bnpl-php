@@ -64,7 +64,7 @@ class SendVendorWelcomeMessageListener
                 if (Auth::check() && !$isInProduction) {
                     $receiver = auth()->user()->email ?: $receiver->email;
                 }
-                Mail::to($receiver)->send(new VendorRegisteredMail($url, $vendor));
+                Mail::to($vendor)->send(new VendorRegisteredMail($url, $vendor));
             }
         } catch (\Throwable $th) {
             Log::error($th);
