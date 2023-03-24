@@ -6,6 +6,8 @@ use th;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Exceptions\SmsMessageFailedToSendException;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 class SendSmsService
 {
@@ -13,6 +15,14 @@ class SendSmsService
 
     public function sendMessage(string $phone_number, string $message)
     {
+        $isInProduction = App::environment() === 'production';
+        //check if there is an authenticated user and app is not in production
+        //if there is an authenticated user and is not in production
+        // the authenticated user phone receives the message
+    
+        if (Auth::check() && !$isInProduction) {
+            $phone_number = auth()->user()->phone_number ?  auth()->user()->phone_number : $phone_number;
+        }
         try {
             $response =  Http::withHeaders([
                 'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
@@ -43,6 +53,4 @@ class SendSmsService
         }
         return $pre . $number;
     }
-
-   
 }
