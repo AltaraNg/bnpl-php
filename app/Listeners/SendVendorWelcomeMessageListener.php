@@ -9,6 +9,8 @@ use App\Services\SendSmsService;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -35,6 +37,7 @@ class SendVendorWelcomeMessageListener
      */
     public function handle(VendorRegisteredEvent $event)
     {
+        $isInProduction = App::environment() === 'production';
         $vendor = $event->vendor;
         $otp = $event->otp;
         $url = $event->url;
@@ -42,7 +45,8 @@ class SendVendorWelcomeMessageListener
         //send message
         try {
             if ($vendor->phone_number) {
-                $this->sendSmsService->sendMessage($vendor->phone_number, $message);
+                $receiver = $vendor->phone_number;
+                $this->sendSmsService->sendMessage($receiver, $message);
             }
         } catch (\Throwable $th) {
             Log::error($th);
@@ -50,7 +54,14 @@ class SendVendorWelcomeMessageListener
 
         try {
             if ($vendor->email && env('APP_SEND_EMAIL')) {
-                Mail::to($vendor)->send(new VendorRegisteredMail($url, $vendor));
+                 //check if there is an authenticated user and app is not in production
+                //if there is an authenticated user and is not in production
+                // the authenticated user phone receives the message
+                $receiver = $vendor;
+                if (Auth::check() && !$isInProduction) {
+                    $receiver = auth()->user() ?: $receiver;
+                }
+                Mail::to($receiver)->send(new VendorRegisteredMail($url, $vendor));
             }
         } catch (\Throwable $th) {
             Log::error($th);
