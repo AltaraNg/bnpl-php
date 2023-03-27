@@ -40,7 +40,7 @@ class AdminController extends Controller
         if ($request->has('portal_access')) {
             $vendorQuery = $vendorQuery->where('portal_access',  $request->portal_access);
         }
-        $vendors = $vendorQuery->simplePaginate();
+        $vendors = $vendorQuery->orderBy('created_at', 'desc')->simplePaginate();
         return $this->respondSuccess(['vendors' => $vendors], 'All vendors fetched successfully');
     }
 
