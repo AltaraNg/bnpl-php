@@ -62,9 +62,9 @@ class SendVendorWelcomeMessageListener
                 // the authenticated user phone receives the message
                 $receiver = $vendor->email;
                 if (Auth::check() && !$isInProduction) {
-                    $receiver = auth()->user()->email ?: $receiver;
+                    $receiver = auth()->user()->email ?: $receiver->email;
                 }
-                Mail::to($vendor)->send(new VendorRegisteredMail($url, $vendor));
+                Mail::to($receiver)->send(new VendorRegisteredMail($url, $vendor));
             }
         } catch (\Throwable $th) {
             Log::error($th);
