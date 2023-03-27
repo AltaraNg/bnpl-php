@@ -19,7 +19,6 @@ class SendSmsService
         //check if there is an authenticated user and app is not in production
         //if there is an authenticated user and is not in production
         // the authenticated user phone receives the message
-
         if (Auth::check() && !$isInProduction) {
             $phone_number = auth()->user()->phone_number ?  auth()->user()->phone_number : $phone_number;
         }
