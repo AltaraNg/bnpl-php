@@ -45,6 +45,9 @@ class SendVendorWelcomeMessageListener
         //send message
         try {
             if ($vendor->phone_number) {
+                //check if there is an authenticated user and app is not in production
+                //if there is an authenticated user and is not in production
+                // the authenticated user phone receives the message
                 $receiver = $vendor->phone_number;
                 $this->sendSmsService->sendMessage($receiver, $message);
             }
@@ -57,9 +60,9 @@ class SendVendorWelcomeMessageListener
                  //check if there is an authenticated user and app is not in production
                 //if there is an authenticated user and is not in production
                 // the authenticated user phone receives the message
-                $receiver = $vendor;
+                $receiver = $vendor->email;
                 if (Auth::check() && !$isInProduction) {
-                    $receiver = auth()->user() ?: $receiver;
+                    $receiver = auth()->user()->email ?: $receiver->email;
                 }
                 Mail::to($receiver)->send(new VendorRegisteredMail($url, $vendor));
             }
