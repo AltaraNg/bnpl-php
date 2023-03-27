@@ -23,11 +23,9 @@ class AdminAccessMiddleware
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
-
         if($request->header('bnlp-admin-access') !== env('BNLP_ADMIN_ACCESS')){
             return  $this->respondForbidden('Invalid access token provided');
         }
-
         if ($request->header('bnlp-admin-access-auth-user-id') == null) {
             Log::info('The currently authenticated user id is not supplied');
         } else {
