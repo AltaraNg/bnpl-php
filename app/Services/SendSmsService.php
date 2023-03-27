@@ -30,6 +30,10 @@ class SendSmsService
                 'phone_number' => $isInProduction == true ? $this->appendPrefix($phone_number) : $phone_number,
                 'message' => $message,
             ]);
+<<<<<<< HEAD
+=======
+           
+>>>>>>> c17e334 (login in user from external api)
             $statusName = $response->json()['data']['response']['messages'][0]['status']['groupName'];
 
             $statusDescription = $response->json()['data']['response']['messages'][0]['status']['description'];
