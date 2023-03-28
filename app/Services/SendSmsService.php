@@ -36,6 +36,8 @@ class SendSmsService
                     'sent_to' => $this->appendPrefix($phone_number),
                 ]);
                 $receiver =  $this->appendPrefix($phone_number);
+            }else{
+                $receiver =  $this->appendPrefix($receiver);
             }
             Log::info($receiver);
             $ch = curl_init();
