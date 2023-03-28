@@ -13,6 +13,8 @@ use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class CreditCheckerVerificationController extends Controller
@@ -66,7 +68,7 @@ class CreditCheckerVerificationController extends Controller
                     'down_payment_rate_id' => $request->input('down_payment_rate_id')
                 ]);
             }
-            Notification::route('mail', config('app.credit_checker_mail'))->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
+            $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
             return $this->respondSuccess(['credit_check_verification' =>  $creditCheckerVerification], 'Credit check initiated and notification sent');
         } catch (\Throwable $th) {
             Log::error($th);
@@ -80,7 +82,7 @@ class CreditCheckerVerificationController extends Controller
             /** @var User $vendor */
             $vendor = auth()->user();
             if ($creditCheckerVerification->status === CreditCheckerVerification::PENDING) {
-                Notification::route('mail', config('app.credit_checker_mail'))->notify(new PendingCreditCheckNotification($creditCheckerVerification->customer, $creditCheckerVerification->vendor, $creditCheckerVerification->product, $creditCheckerVerification));
+                $this->sendCreditCheckMailToAdmin($creditCheckerVerification->customer, $creditCheckerVerification->vendor, $creditCheckerVerification->product, $creditCheckerVerification);
                 return $this->respondSuccess(['status' => CreditCheckerVerification::PENDING], 'Credit check still pending, please check again in 5 minutes');
             }
             if ($creditCheckerVerification->status === CreditCheckerVerification::FAILED) {
@@ -92,6 +94,23 @@ class CreditCheckerVerificationController extends Controller
         } catch (\Throwable $th) {
             Log::error($th);
             return $this->respondError('An error ocurred while try to verify credit check status');
+        }
+    }
+
+    public function sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification)
+    {
+        try {
+            $isInProduction = App::environment() === 'production';
+            $creditCheckerMail =  config('app.credit_checker_mail');
+            //check if there is an authenticated user and app is not in production
+            //if there is an authenticated user and is not in production
+            // the authenticated user phone receives the message
+            if (Auth::check() && !$isInProduction) {
+                $creditCheckerMail = auth()->user()->email ?  auth()->user()->email : $creditCheckerMail;
+            }
+            Notification::route('mail', $creditCheckerMail)->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
+        } catch (\Throwable $th) {
+            Log::error($th);
         }
     }
 }
