@@ -28,10 +28,10 @@ class SendSmsService
                 'BNLP-ADMIN-ACCESS' => env('BNLP_ADMIN_ACCESS'),
                 'BNLP-ADMIN-ACCESS-AUTH-USER-ID' => auth()->id(),
             ])->post(env('ALTARA_PORTAL_BASE_URL') . '/bnlp/send/message', [
-                'phone_number' => $phone_number,
+                'phone_number' => $isInProduction == true ? $this->appendPrefix($phone_number) : $phone_number,
                 'message' => $message,
             ]);
-           
+
             $statusName = $response->json()['data']['response']['messages'][0]['status']['groupName'];
 
             $statusDescription = $response->json()['data']['response']['messages'][0]['status']['description'];
