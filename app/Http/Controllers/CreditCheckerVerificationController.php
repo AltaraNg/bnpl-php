@@ -13,6 +13,8 @@ use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class CreditCheckerVerificationController extends Controller
@@ -98,7 +100,15 @@ class CreditCheckerVerificationController extends Controller
     public function sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification)
     {
         try {
-            Notification::route('mail', config('app.credit_checker_mail'))->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
+            $isInProduction = App::environment() === 'production';
+            $creditCheckerMail =  config('app.credit_checker_mail');
+            //check if there is an authenticated user and app is not in production
+            //if there is an authenticated user and is not in production
+            // the authenticated user phone receives the message
+            if (Auth::check() && !$isInProduction) {
+                $creditCheckerMail = auth()->user()->email ?  auth()->user()->email : $creditCheckerMail;
+            }
+            Notification::route('mail', $creditCheckerMail)->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
         } catch (\Throwable $th) {
             Log::error($th);
         }
