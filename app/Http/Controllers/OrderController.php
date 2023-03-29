@@ -113,6 +113,6 @@ class OrderController extends Controller
         if (strlen($request->query('product_name')) > 0) {
             $productsQuery =   $productsQuery->where('name', 'LIKE', '%' . $request->query('product_name') . '%');
         }
-        return $this->respondSuccess(['products' => $productsQuery->simplePaginate()], 'Products fetched');
+        return $this->respondSuccess(['products' => $productsQuery->paginate(request('per_page'))], 'Products fetched');
     }
 }
