@@ -29,7 +29,7 @@ class CustomerRepository extends BaseRepository
             $query->where('telephone', 'LIKE', '%' . request('telephone') . '%');
         })->with('orders')->latest('created_at')->when(request('telephone') == null, function ($query) use ($vendor_id) {
             $query->where('user_id', $vendor_id);
-        })->simplePaginate();
+        })->paginate(request('per_page'));
     }
     public function filter()
     {
