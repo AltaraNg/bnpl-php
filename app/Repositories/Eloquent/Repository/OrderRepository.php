@@ -16,6 +16,6 @@ class OrderRepository extends BaseRepository
 
     public function myOrders(int $owner_id)
     {
-        return $this->model::query()->with('customer')->where('user_id', $owner_id)->simplePaginate();
+        return $this->model::query()->with('customer')->where('user_id', $owner_id)->paginate(request('per_page'));
     }
 }

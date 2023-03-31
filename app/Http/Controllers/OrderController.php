@@ -8,6 +8,7 @@ use App\Models\BusinessType;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
 use App\Models\BnplVendorProduct;
+use App\Models\Customer;
 use App\Models\Guarantor;
 use App\Models\OrderType;
 use App\Models\PaymentMethod;
@@ -87,6 +88,10 @@ class OrderController extends Controller
             ],
             ['price' => $orderRequest->product_price]
         );
+        $customer = Customer::where('id', $orderRequest->customer_id)->first();
+        if ($customer) {
+            $customer->merchants()->syncWithoutDetaching([$orderRequest->user()->id]);
+        }
         return [
             "bnpl_vendor_product_id" => $product->id,
             "customer_id" => $orderRequest->customer_id,
@@ -113,6 +118,6 @@ class OrderController extends Controller
         if (strlen($request->query('product_name')) > 0) {
             $productsQuery =   $productsQuery->where('name', 'LIKE', '%' . $request->query('product_name') . '%');
         }
-        return $this->respondSuccess(['products' => $productsQuery->simplePaginate()], 'Products fetched');
+        return $this->respondSuccess(['products' => $productsQuery->paginate(request('per_page'))], 'Products fetched');
     }
 }

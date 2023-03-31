@@ -78,6 +78,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Customer::class);
     }
+
+    public function bnplCustomers()
+    {
+        return $this->belongsToMany(Customer::class, 'merchant_customer', 'user_id', 'customer_id');
+    }
     public function orders()
     {
         return $this->hasMany(Order::class, 'owner_id', 'id');
