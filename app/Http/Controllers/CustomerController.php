@@ -54,6 +54,7 @@ class CustomerController extends Controller
             ...$this->setNotNullableFields(),
         ];
         $customer = $this->customerRepository->create($data);
+        $customer->merchants()->syncWithoutDetaching([$request->user()->id]);
         return $this->respondWithResource(new CustomerResource($customer), 'Customer created successfully');
     }
 

@@ -37,4 +37,9 @@ class Customer extends Model
     {
         return $this->hasMany(Guarantor::class, 'customer_id');
     }
+
+    public function merchants()
+    {
+        return $this->belongsToMany(User::class, 'merchant_customer', 'customer_id', 'user_id');
+    }
 }
