@@ -58,7 +58,7 @@ class User extends Authenticatable
         'next_of_kin_name' => 'altara',
         'next_of_kin_phone_no' => 'altara',
         'portal_access' => 1,
-     ];
+    ];
 
     /**
      * @throws \Exception
@@ -83,6 +83,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Customer::class, 'merchant_customer', 'user_id', 'customer_id');
     }
+
+    public function merchantCommissions()
+    {
+        return $this->belongsToMany(Commission::class, 'merchant_commissions', 'merchant_id', 'commission_id');
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class, 'owner_id', 'id');
