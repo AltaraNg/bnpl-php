@@ -28,7 +28,7 @@ class CustomerRepository extends BaseRepository
         return $this->model::query()->when(request('telephone'), function ($query) {
             $query->where('telephone', 'LIKE', '%' . request('telephone') . '%');
         })->with('orders')->latest('created_at')->when(request('telephone') == null, function ($query) use ($vendor_id) {
-            $query->where('user_id', $vendor_id)->orWhereHas('bnplCustomers', function ($query) use ($vendor_id)
+            $query->where('user_id', $vendor_id)->orWhereHas('merchants', function ($query) use ($vendor_id)
             {
                 $query->where('user_id', $vendor_id);
             });
