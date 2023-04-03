@@ -17,7 +17,6 @@ class CustomerController extends Controller
     {
         $user = $request->user();
         $customers = $this->customerRepository->customers($user->id);
-        dd($customers);
         return $this->respondSuccess(['customers' => $customers], 'Vendor customers fetched');
     }
 
