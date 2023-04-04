@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CreditCheckerVerificationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -51,4 +52,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
 
     Route::get('get/dashboard/data', [DashboardController::class, 'dashboard']);
+    Route::get('fetch/merchant/commissions', [CommissionController::class, 'index']);
 });

@@ -8,12 +8,14 @@ use App\Models\BusinessType;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
 use App\Models\BnplVendorProduct;
+use App\Models\Commission;
 use App\Models\Customer;
 use App\Models\Guarantor;
 use App\Models\OrderType;
 use App\Models\PaymentMethod;
 use App\Models\SalesCategory;
 use App\Repositories\Eloquent\Repository\OrderRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
@@ -71,7 +73,16 @@ class OrderController extends Controller
             }
             return $this->respondError($response->object()->message);
         }
-
+        $orderId = $response->object()->data->order->id;
+        $productId = $response->object()->data->order->bnpl_vendor_product_id;
+        $commissionId = Commission::query()->where('name', '2_percent')->first()->id ?? 0;
+        if ($commissionId) {
+            DB::table('merchant_commissions')->insert([
+                'commission_id' => $commissionId,
+                'merchant_id' => $orderRequest->user()->id,
+                'bnpl_vendor_product_id' => $productId,
+            ]);
+        }
         return $this->respondSuccess(['order' => $response->object()->data]);
     }
 
