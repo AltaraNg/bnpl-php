@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
         $totalCommission = MerchantCommission::where('merchant_id', auth()->id())->sum('amount');
 
-        $recent_activities = $orderQuery->with('bnplProduct')->latest('created_at')->limit(10)->get();
+        $recent_activities = $orderQuery->with('bnplProduct')->latest('created_at')->paginate(request('per_page', 15));
         return $this->respondSuccess(['recent_activities' => $recent_activities, 'total_number_of_sales' => $total_number_of_sales, 'total_revenue' => $total_revenue, 'total_commission' => $totalCommission], 'Data fetched successfully');
     }
 }
