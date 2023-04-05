@@ -75,12 +75,14 @@ class OrderController extends Controller
         }
         $orderId = $response->object()->data->order->id;
         $productId = $response->object()->data->order->bnpl_vendor_product_id;
-        $commissionId = Commission::query()->where('name', '2_percent')->first()->id ?? 0;
-        if ($commissionId) {
+        $commission = Commission::query()->where('name', '2_percent')->first();
+        if ($commission) {
             DB::table('merchant_commissions')->insert([
-                'commission_id' => $commissionId,
+                'commission_id' => $commission->id,
                 'merchant_id' => $orderRequest->user()->id,
                 'bnpl_vendor_product_id' => $productId,
+                'new_order_id' => $orderId,
+                'amount' => ($commission->value / 100) * $orderRequest->product_price,
             ]);
         }
         return $this->respondSuccess(['order' => $response->object()->data]);

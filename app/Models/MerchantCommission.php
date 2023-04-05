@@ -15,6 +15,11 @@ class MerchantCommission extends Model
         return $this->belongsTo(BnplVendorProduct::class, 'bnpl_vendor_product_id');
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'new_order_id');
+    }
+
     public function merchant()
     {
         return $this->belongsTo(User::class, 'merchant_id');
