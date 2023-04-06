@@ -99,7 +99,7 @@ class OrderController extends Controller
                 'name' => $orderRequest->product_name,
                 'vendor_id' => $orderRequest->user()->id,
             ],
-            ['price' => $orderRequest->product_price]
+            ['price' => $orderRequest->cost_price]
         );
         $customer = Customer::where('id', $orderRequest->customer_id)->first();
         if ($customer) {
