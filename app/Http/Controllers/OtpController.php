@@ -21,7 +21,7 @@ class OtpController extends Controller
         if ($response->status == false) {
             return $this->respondError($response->message, 400);
         }
-        $message = 'Your OTP is '. $response->otp . ' If you did not initiate this request. Please ignore';
+        $message = 'Your Altara OTP is '. $response->otp . ' If you did not initiate this request. Please ignore';
         $response  = $this->sendSmsService->sendMessage($request->input('phone_number'), $message);
         if ($response === true) {
             return $this->respondSuccess([], 'Otp Sent Successfully');

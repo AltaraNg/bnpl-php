@@ -54,7 +54,7 @@ class CreditCheckerVerificationController extends Controller
                     'name' => $request->product_name,
                     'vendor_id' => $vendor->id,
                 ],
-                ['price' => $request->product_price]
+                ['price' => $request->cost_price]
             );
             if ($customer->creditCheckerVerifications()->where('status', CreditCheckerVerification::PENDING)->exists()) {
                 $creditCheckerVerification = $customer->latestCreditCheckerVerifications()->where('status', CreditCheckerVerification::PENDING)->first();
