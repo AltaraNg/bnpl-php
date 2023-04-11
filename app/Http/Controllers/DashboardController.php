@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BnplVendorProduct;
 use App\Models\Commission;
 use App\Models\MerchantCommission;
 use App\Models\Order;
@@ -14,7 +15,7 @@ class DashboardController extends Controller
     {
         $orderQuery = Order::query()->where('owner_id', auth()->id())->where('financed_by', 'altara-bnpl');
         $total_number_of_sales = $orderQuery->count();
-        $total_revenue =  $orderQuery->sum('product_price');
+        $total_revenue = BnplVendorProduct::query()->where('vendor_id', auth()->id())->sum('price');
 
 
         $totalCommission = MerchantCommission::where('merchant_id', auth()->id())->sum('amount');
