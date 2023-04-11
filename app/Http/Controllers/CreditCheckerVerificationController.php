@@ -8,14 +8,18 @@ use App\Models\BnplVendorProduct;
 use App\Models\CreditCheckerVerification;
 use App\Models\Customer;
 use App\Models\Guarantor;
+use App\Models\NewDocument;
 use App\Notifications\PendingCreditCheckNotification;
 use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CreditCheckerVerificationController extends Controller
 {
@@ -67,6 +71,13 @@ class CreditCheckerVerificationController extends Controller
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
                     'down_payment_rate_id' => $request->input('down_payment_rate_id')
                 ]);
+                if ($request->hasFile('documents') && $request->file('documents')->isValid()) {
+                    $documents = $request->input('documents');
+                    foreach ($documents as $key => $document) {
+                        dd($document);
+                    }
+                }
+
             }
             $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
             return $this->respondSuccess(['credit_check_verification' =>  $creditCheckerVerification], 'Credit check initiated and notification sent');
@@ -112,5 +123,30 @@ class CreditCheckerVerificationController extends Controller
         } catch (\Throwable $th) {
             Log::error($th);
         }
+    }
+
+    private function uploadDocument(UploadedFile $file)
+    {
+        $filename = 'documents/bnpl' . '/' . $this->getFileName($file);
+        $path = Storage::disk('s3')->put($filename, $file);
+        $path = Storage::disk('s3')->url($path);
+        return $path;
+    }
+
+    public function moldDocument($documentName, UploadedFile $file)
+    {
+        $document = new NewDocument();
+        $document->document_url = $this->uploadDocument($file);
+
+        $document->user_id = auth('api')->user()->id;
+        $document->name = $documentName;
+        $document->document_type = Str::slug($documentName, '_');
+
+        dd($document);
+    }
+    protected function getFileName($file)
+    {
+        /** generate a random string and append the file extension to the random string */
+        return Str::random(32) . '.' . $file->extension();
     }
 }
