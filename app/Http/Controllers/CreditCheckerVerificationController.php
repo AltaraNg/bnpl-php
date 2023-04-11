@@ -32,8 +32,18 @@ class CreditCheckerVerificationController extends Controller
 
     public function store(OrderRequest $request)
     {
+
         try {
             $customer = $this->customerRepository->findById($request->input('customer_id'));
+
+            if ($request->has('documents')) {
+                $documents = $request->documents;
+                $customerDocuments = [];
+                foreach ($documents as $key => $document) {
+                    $customerDocuments[] =  $this->moldDocument($document['name'], $document['url']);
+                }
+                $customer->newDocuments()->saveMany($customerDocuments);
+            }
 
             $guarantors  = GuarantorDto::fromOrderApiRequest($request);
             foreach ($guarantors as $key => $guarantor) {
@@ -71,12 +81,6 @@ class CreditCheckerVerificationController extends Controller
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
                     'down_payment_rate_id' => $request->input('down_payment_rate_id')
                 ]);
-                if ($request->hasFile('documents') && $request->file('documents')->isValid()) {
-                    $documents = $request->input('documents');
-                    foreach ($documents as $key => $document) {
-                        dd($document);
-                    }
-                }
 
             }
             $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
@@ -133,20 +137,15 @@ class CreditCheckerVerificationController extends Controller
         return $path;
     }
 
-    public function moldDocument($documentName, UploadedFile $file)
+    public function moldDocument($documentName, $documentUrl)
     {
         $document = new NewDocument();
-        $document->document_url = $this->uploadDocument($file);
+        $document->document_url = $documentUrl;
 
-        $document->user_id = auth('api')->user()->id;
+        $document->user_id = auth()->id();
         $document->name = $documentName;
         $document->document_type = Str::slug($documentName, '_');
 
-        dd($document);
-    }
-    protected function getFileName($file)
-    {
-        /** generate a random string and append the file extension to the random string */
-        return Str::random(32) . '.' . $file->extension();
+        return $document;
     }
 }

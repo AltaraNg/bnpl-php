@@ -35,7 +35,7 @@ class OrderRequest extends FormRequest
             'product_price' => ['required', 'numeric'],
             'cost_price' => ['required', 'numeric'],
             'product_name' => ['required', 'string'],
-            'down_payment_rate_id' => ['sometimes','integer', 'exists:down_payment_rates,id'],
+            'down_payment_rate_id' => ['sometimes', 'integer', 'exists:down_payment_rates,id'],
             'guarantors' => ['sometimes', 'array', 'min:1'],
             'guarantors.*.first_name' => ['required', 'string', 'max:200'],
             'guarantors.*.last_name' => ['required', 'string', 'max:200'],
@@ -46,6 +46,9 @@ class OrderRequest extends FormRequest
             'guarantors.*.gender' => ['sometimes', 'string', Rule::in(['male', 'female'])],
             'guarantors.*.relationship' => ['sometimes', 'string'],
             'guarantors.*.occupation' => ['sometimes', 'string'],
+            'documents' =>  ['sometimes', 'array', 'min:1'],
+            'documents.*.url' => ['required', 'string'],
+            'documents.*.name' => ['required', 'string'],
         ];
     }
 
