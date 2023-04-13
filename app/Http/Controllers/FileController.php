@@ -13,12 +13,13 @@ class FileController extends Controller
     public function uploadSingleFile(Request $request)
     {
         $this->validate($request, [
-            'file' => 'required|file',
+            'file' => ['required', 'file'],
+            'name' => ['required', 'string'],
         ]);
 
         try {
             $path =  $this->uploadToS3($request->file('file'));
-            return $this->respondSuccess(['file' => $path], 'File uploaded successfully');
+            return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->input('name')]], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
             return $this->respondError('Error occurred while uploading documents');
@@ -28,18 +29,19 @@ class FileController extends Controller
     public function uploadMultipleFiles(Request $request)
     {
         $this->validate($request, [
-            'files' => ['required', 'array'],
-            'files.*' => 'required|file',
+            'documents' => ['required', 'array'],
+            'documents.*.file' => ['required', 'file', 'max:512'],
+            'documents.*.name' => ['required', 'string'],
         ]);
 
         try {
-            $paths = [];
+            $uploads = [];
 
-            $files = $request->file('files');
-            foreach ($files as $key => $file) {
-                $paths[] =  $this->uploadToS3($file);
+            $documents = $request->documents;
+            foreach ($documents as $key => $item) {
+                $uploads[] = ['url' =>  $this->uploadToS3($item['file']), 'name' => $item['name']];
             }
-            return $this->respondSuccess(['files' => $paths], 'File uploaded successfully');
+            return $this->respondSuccess(['files' => $uploads], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
             return $this->respondError('Error occurred while uploading documents');
