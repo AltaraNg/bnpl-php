@@ -13,7 +13,7 @@ class FileController extends Controller
     public function uploadSingleFile(Request $request)
     {
         $this->validate($request, [
-            'file' => ['required', 'file'],
+            'file' => ['required', 'file', 'max:512'],
             'name' => ['required', 'string'],
         ]);
 
