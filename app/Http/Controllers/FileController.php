@@ -55,7 +55,7 @@ class FileController extends Controller
         try {
             $s3 = Storage::disk('s3');
             $imageFileName = time() . '.' . $image->getClientOriginalExtension();
-            $pathToImage = 'public/storage/' . $directory . '/' . $imageFileName;
+            $pathToImage = 'documents/bnpl/' . $directory . '/' . $imageFileName;
 
             $resp = $s3->put($pathToImage, file_get_contents($image), 'public');
             if (!$resp) {

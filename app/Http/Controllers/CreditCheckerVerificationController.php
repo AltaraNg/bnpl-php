@@ -72,9 +72,11 @@ class CreditCheckerVerificationController extends Controller
                     'bnpl_vendor_product_id' => $product->id,
                     'repayment_duration_id' => $request->input('repayment_duration_id'),
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
-                    'down_payment_rate_id' => $request->input('down_payment_rate_id')
+                    'down_payment_rate_id' => $request->input('down_payment_rate_id'),
                 ]);
 
+                $creditCheckerVerification->credit_check_no = $this->generateCreditCheckNumber($creditCheckerVerification->id, $creditCheckerVerification->initiated_by);
+                $creditCheckerVerification->update();
                 if ($request->has('documents')) {
                     $documents = $request->documents;
                     $customerDocuments = [];
@@ -131,13 +133,7 @@ class CreditCheckerVerificationController extends Controller
         }
     }
 
-    private function uploadDocument(UploadedFile $file)
-    {
-        $filename = 'documents/bnpl' . '/' . $this->getFileName($file);
-        $path = Storage::disk('s3')->put($filename, $file);
-        $path = Storage::disk('s3')->url($path);
-        return $path;
-    }
+    
 
     public function moldDocument($documentName, $documentUrl)
     {
@@ -149,5 +145,10 @@ class CreditCheckerVerificationController extends Controller
         $document->document_type = Str::slug($documentName, '_');
 
         return $document;
+    }
+
+    public function generateCreditCheckNumber($creditCheckerVerificationId, $vendorId)
+    {
+        return 'CR/' . $creditCheckerVerificationId . '/' . $vendorId;
     }
 }
