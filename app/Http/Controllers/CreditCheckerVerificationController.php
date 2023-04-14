@@ -36,14 +36,7 @@ class CreditCheckerVerificationController extends Controller
         try {
             $customer = $this->customerRepository->findById($request->input('customer_id'));
 
-            if ($request->has('documents')) {
-                $documents = $request->documents;
-                $customerDocuments = [];
-                foreach ($documents as $key => $document) {
-                    $customerDocuments[] =  $this->moldDocument($document['name'], $document['url']);
-                }
-                $customer->newDocuments()->saveMany($customerDocuments);
-            }
+           
 
             $guarantors  = GuarantorDto::fromOrderApiRequest($request);
             foreach ($guarantors as $key => $guarantor) {
@@ -81,6 +74,15 @@ class CreditCheckerVerificationController extends Controller
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
                     'down_payment_rate_id' => $request->input('down_payment_rate_id')
                 ]);
+
+                if ($request->has('documents')) {
+                    $documents = $request->documents;
+                    $customerDocuments = [];
+                    foreach ($documents as $key => $document) {
+                        $customerDocuments[] =  $this->moldDocument($document['name'], $document['url']);
+                    }
+                    $creditCheckerVerification->documents()->saveMany($customerDocuments);
+                }
 
             }
             $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
