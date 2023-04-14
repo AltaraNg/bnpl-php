@@ -13,7 +13,7 @@ class FileController extends Controller
     public function uploadSingleFile(Request $request)
     {
         $this->validate($request, [
-            'file' => ['required', 'file', 'max:512'],
+            'file' => ['required', 'file', 'size:5000'],
             'name' => ['required', 'string'],
         ]);
 
@@ -30,7 +30,7 @@ class FileController extends Controller
     {
         $this->validate($request, [
             'documents' => ['required', 'array'],
-            'documents.*.file' => ['required', 'file', 'max:512'],
+            'documents.*.file' => ['required', 'file', 'size:5000'],
             'documents.*.name' => ['required', 'string'],
         ]);
 
