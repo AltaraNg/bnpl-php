@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Customer extends Model
 {
@@ -41,5 +42,11 @@ class Customer extends Model
     public function merchants()
     {
         return $this->belongsToMany(User::class, 'merchant_customer', 'customer_id', 'user_id');
+    }
+
+    
+    public function newDocuments(): MorphMany
+    {
+        return $this->morphMany(NewDocument::class, 'documentable');
     }
 }

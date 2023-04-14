@@ -5,6 +5,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CreditCheckerVerificationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\VendorController;
@@ -47,10 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('generate/otp', [OtpController::class, 'generateOtp']);
     Route::post('validate/otp', [OtpController::class, 'validateOtp']);
-    
+
     Route::post('initiate/credit/check', [CreditCheckerVerificationController::class, 'store']);
     Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
 
     Route::get('get/dashboard/data', [DashboardController::class, 'dashboard']);
     Route::get('fetch/merchant/commissions', [CommissionController::class, 'index']);
+
+
+    Route::post('upload/single/file', [FileController::class, 'uploadSingleFile']);
+    Route::post('upload/multiple/files', [FileController::class, 'uploadMultipleFiles']);
 });

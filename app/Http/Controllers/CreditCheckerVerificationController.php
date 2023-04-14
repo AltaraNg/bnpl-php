@@ -8,14 +8,18 @@ use App\Models\BnplVendorProduct;
 use App\Models\CreditCheckerVerification;
 use App\Models\Customer;
 use App\Models\Guarantor;
+use App\Models\NewDocument;
 use App\Notifications\PendingCreditCheckNotification;
 use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CreditCheckerVerificationController extends Controller
 {
@@ -28,8 +32,11 @@ class CreditCheckerVerificationController extends Controller
 
     public function store(OrderRequest $request)
     {
+
         try {
             $customer = $this->customerRepository->findById($request->input('customer_id'));
+
+           
 
             $guarantors  = GuarantorDto::fromOrderApiRequest($request);
             foreach ($guarantors as $key => $guarantor) {
@@ -65,8 +72,20 @@ class CreditCheckerVerificationController extends Controller
                     'bnpl_vendor_product_id' => $product->id,
                     'repayment_duration_id' => $request->input('repayment_duration_id'),
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
-                    'down_payment_rate_id' => $request->input('down_payment_rate_id')
+                    'down_payment_rate_id' => $request->input('down_payment_rate_id'),
                 ]);
+
+                $creditCheckerVerification->credit_check_no = $this->generateCreditCheckNumber($creditCheckerVerification->id, $creditCheckerVerification->initiated_by);
+                $creditCheckerVerification->update();
+                if ($request->has('documents')) {
+                    $documents = $request->documents;
+                    $customerDocuments = [];
+                    foreach ($documents as $key => $document) {
+                        $customerDocuments[] =  $this->moldDocument($document['name'], $document['url']);
+                    }
+                    $creditCheckerVerification->documents()->saveMany($customerDocuments);
+                }
+
             }
             $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
             return $this->respondSuccess(['credit_check_verification' =>  $creditCheckerVerification], 'Credit check initiated and notification sent');
@@ -112,5 +131,24 @@ class CreditCheckerVerificationController extends Controller
         } catch (\Throwable $th) {
             Log::error($th);
         }
+    }
+
+    
+
+    public function moldDocument($documentName, $documentUrl)
+    {
+        $document = new NewDocument();
+        $document->document_url = $documentUrl;
+
+        $document->user_id = auth()->id();
+        $document->name = $documentName;
+        $document->document_type = Str::slug($documentName, '_');
+
+        return $document;
+    }
+
+    public function generateCreditCheckNumber($creditCheckerVerificationId, $vendorId)
+    {
+        return 'CR/' . $creditCheckerVerificationId . '/' . $vendorId;
     }
 }

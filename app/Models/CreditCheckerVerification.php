@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class CreditCheckerVerification extends Model
 {
@@ -15,7 +16,7 @@ class CreditCheckerVerification extends Model
     const FAILED = 'failed';
     const STATUSES = [self::PENDING, self::PASSED, self::FAILED];
 
-    protected $with = ['product', 'repaymentDuration', 'repaymentCycle', 'downPaymentRate'];
+    protected $with = ['product', 'repaymentDuration', 'repaymentCycle', 'downPaymentRate', 'documents'];
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
@@ -43,5 +44,11 @@ class CreditCheckerVerification extends Model
     public function downPaymentRate()
     {
         return $this->belongsTo(DownPaymentRate::class, 'down_payment_rate_id');
+    }
+
+
+    public function documents(): MorphMany
+    {
+        return $this->morphMany(NewDocument::class, 'documentable');
     }
 }
