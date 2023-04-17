@@ -19,10 +19,10 @@ class FileController extends Controller
 
         try {
             $path =  $this->uploadToS3($request->file('file'));
-            return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->input('name')]], 'File uploaded successfully');
+            return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->name]], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
-            return $this->respondError('Error occurred while uploading documents');
+            return $this->respondError($th->getMessage());
         }
     }
 
@@ -63,8 +63,8 @@ class FileController extends Controller
             }
             return Storage::disk('s3')->url($pathToImage);
         } catch (\Throwable $th) {
-            Log::error($th);
-            throw new Error('Error occurred while uploading the file');
+           
+            throw new Error($th->getMessage());
         }
     }
 }
