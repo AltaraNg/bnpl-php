@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: altara_bnlp_php
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    external_links:
+      - altara_db
+    networks:
+      - servers_altara-servers
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: altara_bnlp_php_webserver
+    tty: true
+    ports:
+      - "6060:80"
+      - "6061:443"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - servers_altara-servers
+
+#Docker Networks
+networks:
+   servers_altara-servers:
+      external: true
