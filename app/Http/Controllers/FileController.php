@@ -19,7 +19,7 @@ class FileController extends Controller
 
         try {
             $path =  $this->uploadToS3($request->file('file'));
-            return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->input('name')]], 'File uploaded successfully');
+            return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->name]], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
             return $this->respondError($th->getMessage());
