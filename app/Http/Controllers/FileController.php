@@ -22,7 +22,7 @@ class FileController extends Controller
             return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->input('name')]], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
-            return $this->respondError('Error occurred while uploading documents');
+            return $this->respondError($th->getMessage());
         }
     }
 
