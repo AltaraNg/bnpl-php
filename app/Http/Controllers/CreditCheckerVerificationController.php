@@ -95,6 +95,12 @@ class CreditCheckerVerificationController extends Controller
         }
     }
 
+
+    public function reInitiateCreditCheck(Request $request)
+    {
+        $this->validate($request, []);
+    }
+
     public function verifyCreditCheck(CreditCheckerVerification $creditCheckerVerification)
     {
         try {
