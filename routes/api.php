@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('validate/otp', [OtpController::class, 'validateOtp']);
 
     Route::post('initiate/credit/check', [CreditCheckerVerificationController::class, 'store']);
+    Route::post('re-initiate/credit/check', [CreditCheckerVerificationController::class, 'reInitiateCreditCheck']);
     Route::get('verify/credit/check/{creditCheckerVerification}', [CreditCheckerVerificationController::class, 'verifyCreditCheck']);
 
     Route::get('get/dashboard/data', [DashboardController::class, 'dashboard']);
