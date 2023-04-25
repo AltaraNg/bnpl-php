@@ -75,12 +75,14 @@ class OrderController extends Controller
         }
         $orderId = $response->object()->data->order->id;
         $productId = $response->object()->data->order->bnpl_vendor_product_id;
-        if ($orderRequest->has('document')) {
+        $commission = null;
+        if ($orderRequest->input('has_document')  == 'yes') {
             $commission = Commission::query()->where('name', '5_percent')->first();
-        }else{
+        }
+        if ($orderRequest->input('has_document')  == 'no') {
             $commission = Commission::query()->where('name', '2_percent')->first();
         }
-      
+
         if ($commission &&  $orderRequest->cost_price) {
             DB::table('merchant_commissions')->insert([
                 'commission_id' => $commission->id,
