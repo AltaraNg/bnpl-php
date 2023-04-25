@@ -61,7 +61,7 @@ class FileController extends Controller
             if (!$resp) {
                 throw new Error('Error occurred while uploading the file');
             }
-            return Storage::disk('s3')->url($pathToImage);
+            return $pathToImage;
         } catch (\Throwable $th) {
            
             throw new Error($th->getMessage());
