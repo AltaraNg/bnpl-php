@@ -13,7 +13,7 @@ class FileController extends Controller
     public function uploadSingleFile(Request $request)
     {
         $this->validate($request, [
-            'file' => ['required', 'file', 'max:5000'],
+            'file' => ['required', 'file', 'max:2000'],
             'name' => ['required', 'string'],
         ]);
 
@@ -30,7 +30,7 @@ class FileController extends Controller
     {
         $this->validate($request, [
             'documents' => ['required', 'array'],
-            'documents.*.file' => ['required', 'file', 'max:5000'],
+            'documents.*.file' => ['required', 'file', 'max:2000'],
             'documents.*.name' => ['required', 'string'],
         ]);
 
@@ -61,7 +61,7 @@ class FileController extends Controller
             if (!$resp) {
                 throw new Error('Error occurred while uploading the file');
             }
-            return Storage::disk('s3')->url($pathToImage);
+            return $pathToImage;
         } catch (\Throwable $th) {
            
             throw new Error($th->getMessage());
