@@ -73,7 +73,7 @@ class FileController extends Controller
         $file = $request->input('file');
         try {
             $s3 = Storage::disk('s3');
-            $imageFileName = time() . '.' . $image->getClientOriginalExtension();
+            $imageFileName = time() . '.image';
             $pathToImage = 'debug/' . $imageFileName;
 
             $resp = $s3->put($pathToImage, base64_decode($file));
