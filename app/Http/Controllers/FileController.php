@@ -63,7 +63,25 @@ class FileController extends Controller
             }
             return $pathToImage;
         } catch (\Throwable $th) {
-           
+
+            throw new Error($th->getMessage());
+        }
+    }
+
+    public function debug(Request $request)
+    {
+        $file = $request->input('file');
+        try {
+            $s3 = Storage::disk('s3');
+            $imageFileName = time() . '.' . $image->getClientOriginalExtension();
+            $pathToImage = 'debug/' . $imageFileName;
+
+            $resp = $s3->put($pathToImage, base64_decode($file));
+            if (!$resp) {
+                throw new Error('Error occurred while uploading the file');
+            }
+            return $pathToImage;
+        } catch (\Throwable $th) {
             throw new Error($th->getMessage());
         }
     }
