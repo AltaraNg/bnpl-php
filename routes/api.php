@@ -61,4 +61,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('upload/multiple/files', [FileController::class, 'uploadMultipleFiles']);
 });
 
-Route::post('debug', [FileController::class, 'debug']);
+
