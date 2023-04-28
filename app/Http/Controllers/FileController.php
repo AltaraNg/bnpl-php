@@ -15,8 +15,7 @@ class FileController extends Controller
         $this->validate($request, [
             'file' => ['required', 'string'],
             'name' => ['required', 'string'],
-        ]);
-      ; 
+        ]);;
         try {
             $path =  $this->uploadToS3($request->input('file'));
 
@@ -40,7 +39,7 @@ class FileController extends Controller
 
             $documents = $request->documents;
             foreach ($documents as $key => $item) {
-                $uploads[] = ['url' =>  $this->uploadToS3($item['file']), 'name' => $item['name']];
+                $uploads[] = ['url' =>  $this->uploadToS3($item['file'], $item['name']),'name' => $item['name']];
             }
             return $this->respondSuccess(['files' => $uploads], 'File uploaded successfully');
         } catch (\Throwable $th) {
@@ -50,14 +49,14 @@ class FileController extends Controller
     }
 
 
-    public function  uploadToS3($image, $directory = 'general')
+    public function  uploadToS3($image, $name, $directory = 'general')
     {
 
         try {
             $s3 = Storage::disk('s3');
             $base64String = substr($image, strpos($image, ",") + 1);
 
-            $imageFileName = time() . '.' .'png';
+            $imageFileName = $name . time() . '.' . 'png';
             $pathToImage = 'documents/bnpl/' . $directory . '/' . $imageFileName;
 
             $resp = $s3->put($pathToImage, base64_decode($base64String), 'public');
@@ -70,6 +69,4 @@ class FileController extends Controller
             throw new Error($th->getMessage());
         }
     }
-
-    
 }
