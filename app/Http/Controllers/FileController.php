@@ -17,7 +17,7 @@ class FileController extends Controller
             'name' => ['required', 'string'],
         ]);;
         try {
-            $path =  $this->uploadToS3($request->input('file'));
+            $path =  $this->uploadToS3($request->input('file'), $request->input('name'));
 
             return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->name]], 'File uploaded successfully');
         } catch (\Throwable $th) {
