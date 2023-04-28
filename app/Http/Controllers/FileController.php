@@ -57,7 +57,7 @@ class FileController extends Controller
             $imageFileName = time() . '.' . $image->getClientOriginalExtension();
             $pathToImage = 'documents/bnpl/' . $directory . '/' . $imageFileName;
 
-            $resp = $s3->put($pathToImage, file_get_contents($image), 'public');
+            $resp = $s3->put($pathToImage, base64_decode($image), 'public');
             if (!$resp) {
                 throw new Error('Error occurred while uploading the file');
             }
