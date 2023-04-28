@@ -13,12 +13,12 @@ class FileController extends Controller
     public function uploadSingleFile(Request $request)
     {
         $this->validate($request, [
-            'file' => ['required', 'file', 'max:2000'],
+            'file' => ['required', 'string'],
             'name' => ['required', 'string'],
-        ]);
-
+        ]);;
         try {
-            $path =  $this->uploadToS3($request->file('file'));
+            $path =  $this->uploadToS3($request->input('file'), $request->input('name'));
+
             return $this->respondSuccess(['file' => ['url' => $path, 'name' => $request->name]], 'File uploaded successfully');
         } catch (\Throwable $th) {
             Log::error($th);
@@ -30,7 +30,7 @@ class FileController extends Controller
     {
         $this->validate($request, [
             'documents' => ['required', 'array'],
-            'documents.*.file' => ['required', 'file', 'max:2000'],
+            'documents.*.file' => ['required', 'string'],
             'documents.*.name' => ['required', 'string'],
         ]);
 
@@ -39,7 +39,7 @@ class FileController extends Controller
 
             $documents = $request->documents;
             foreach ($documents as $key => $item) {
-                $uploads[] = ['url' =>  $this->uploadToS3($item['file']), 'name' => $item['name']];
+                $uploads[] = ['url' =>  $this->uploadToS3($item['file'], $item['name']),'name' => $item['name']];
             }
             return $this->respondSuccess(['files' => $uploads], 'File uploaded successfully');
         } catch (\Throwable $th) {
@@ -49,15 +49,17 @@ class FileController extends Controller
     }
 
 
-    public function  uploadToS3(UploadedFile $image, $directory = 'general')
+    public function  uploadToS3($image, $name, $directory = 'general')
     {
 
         try {
             $s3 = Storage::disk('s3');
-            $imageFileName = time() . '.' . $image->getClientOriginalExtension();
+            $base64String = substr($image, strpos($image, ",") + 1);
+
+            $imageFileName = $name . time() . '.' . 'png';
             $pathToImage = 'documents/bnpl/' . $directory . '/' . $imageFileName;
 
-            $resp = $s3->put($pathToImage, base64_decode($image), 'public');
+            $resp = $s3->put($pathToImage, base64_decode($base64String), 'public');
             if (!$resp) {
                 throw new Error('Error occurred while uploading the file');
             }
@@ -67,6 +69,4 @@ class FileController extends Controller
             throw new Error($th->getMessage());
         }
     }
-
-    
 }
