@@ -74,6 +74,7 @@ class CreditCheckerVerificationController extends Controller
                     'repayment_duration_id' => $request->input('repayment_duration_id'),
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
                     'down_payment_rate_id' => $request->input('down_payment_rate_id'),
+                    'business_type_id' => $request->input('business_type_id'),
                 ]);
 
                 $creditCheckerVerification->credit_check_no = $this->generateCreditCheckNumber($creditCheckerVerification->id, $creditCheckerVerification->initiated_by);
