@@ -97,7 +97,7 @@ class OrderController extends Controller
 
     public function orderData(OrderRequest $orderRequest): array
     {
-        $businessType = BusinessType::query()->where('slug', 'ap_products')->first();
+        // $businessType = BusinessType::query()->where('slug', 'ap_products')->first();
         $orderType = OrderType::query()->where('name', 'Altara Pay')->first();
         $paymentMethod = PaymentMethod::query()->where('name', 'direct-debit')->first();
         $saleCategory = SalesCategory::query()->first();
@@ -116,7 +116,6 @@ class OrderController extends Controller
             "bnpl_vendor_product_id" => $product->id,
             "customer_id" => $orderRequest->customer_id,
             "bank_id" => 1,
-            "business_type_id" => $businessType->id,
             "owner_id" => $orderRequest->user()->id,
             "inventory_id" => 2,
             "payment_method_id" => $paymentMethod->id,

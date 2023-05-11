@@ -50,6 +50,7 @@ class OrderRequest extends FormRequest
             'documents.*.url' => ['required', 'string'],
             'documents.*.name' => ['required', 'string'],
             'has_document' => ['sometimes', 'string', Rule::in(['yes', 'no'])],
+            'business_type_id' => ['required', 'integer' ,'exists:business_types,id'],
         ];
     }
 
