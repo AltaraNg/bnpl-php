@@ -16,7 +16,7 @@ class CreditCheckerVerification extends Model
     const FAILED = 'failed';
     const STATUSES = [self::PENDING, self::PASSED, self::FAILED];
 
-    protected $with = ['product', 'repaymentDuration', 'repaymentCycle', 'downPaymentRate', 'documents'];
+    protected $with = ['product', 'repaymentDuration', 'repaymentCycle', 'downPaymentRate', 'documents', 'businessType'];
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
@@ -46,6 +46,10 @@ class CreditCheckerVerification extends Model
         return $this->belongsTo(DownPaymentRate::class, 'down_payment_rate_id');
     }
 
+    public function businessType()
+    {
+        return $this->belongsTo(BusinessType::class, 'business_type_id');
+    }
 
     public function documents(): MorphMany
     {
