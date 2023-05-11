@@ -114,6 +114,7 @@ class OrderController extends Controller
         }
         return [
             "bnpl_vendor_product_id" => $product->id,
+            'business_type_id'=> $orderRequest->business_type_id,
             "customer_id" => $orderRequest->customer_id,
             "bank_id" => 1,
             "owner_id" => $orderRequest->user()->id,
