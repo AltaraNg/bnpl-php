@@ -116,6 +116,8 @@ class CreditCheckerVerificationController extends Controller
             $newCreditCheckerVerification->updated_at = Carbon::now();
             $newCreditCheckerVerification->status = CreditCheckerVerification::PENDING;
             $newCreditCheckerVerification->reason = null;
+            $newCreditCheckerVerification->processed_by = null;
+            $newCreditCheckerVerification->processed_at = null;
             $newCreditCheckerVerification->save();
             if ($request->has('documents')) {
                 $documents = $request->documents;
