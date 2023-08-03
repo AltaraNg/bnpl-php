@@ -128,9 +128,9 @@ class OrderController extends Controller
             "repayment" => $orderRequest->repayment,
             "down_payment" => $orderRequest->down_payment,
             "financed_by" => Order::ALTARA_BNPL,
-            "product_price" => $orderRequest->product_price,
+            "product_price" => $orderRequest->cost_price,
             "fixed_repayment" => $orderRequest->fixed_repayment,
-            "cost_price" => $orderRequest->cost_price
+            "cost_price" => $orderRequest->product_price
         ];
     }
 
