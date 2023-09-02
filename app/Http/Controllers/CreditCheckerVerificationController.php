@@ -14,6 +14,7 @@ use App\Repositories\Eloquent\Repository\CustomerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,7 @@ class CreditCheckerVerificationController extends Controller
         try {
             $customer = $this->customerRepository->findById($request->input('customer_id'));
 
-           
+
 
             $guarantors  = GuarantorDto::fromOrderApiRequest($request);
             foreach ($guarantors as $key => $guarantor) {
@@ -73,6 +74,7 @@ class CreditCheckerVerificationController extends Controller
                     'repayment_duration_id' => $request->input('repayment_duration_id'),
                     'repayment_cycle_id' => $request->input('repayment_cycle_id'),
                     'down_payment_rate_id' => $request->input('down_payment_rate_id'),
+                    'business_type_id' => $request->input('business_type_id'),
                 ]);
 
                 $creditCheckerVerification->credit_check_no = $this->generateCreditCheckNumber($creditCheckerVerification->id, $creditCheckerVerification->initiated_by);
@@ -85,10 +87,51 @@ class CreditCheckerVerificationController extends Controller
                     }
                     $creditCheckerVerification->documents()->saveMany($customerDocuments);
                 }
-
             }
             $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $creditCheckerVerification);
             return $this->respondSuccess(['credit_check_verification' =>  $creditCheckerVerification], 'Credit check initiated and notification sent');
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return $this->respondError('An error ocurred while try to initiate credit check');
+        }
+    }
+
+
+    public function reInitiateCreditCheck(Request $request)
+    {
+        $this->validate($request, [
+            'credit_check_no' => ['required', 'string', 'exists:credit_checker_verifications,credit_check_no'],
+            'documents' =>  ['required', 'array', 'min:1'],
+            'documents.*.url' => ['required', 'string'],
+            'documents.*.name' => ['required', 'string'],
+        ]);
+        try {
+            /** @var CreditCheckerVerification $creditCheckVerification */
+            $oldCreditCheckerVerification = CreditCheckerVerification::where('credit_check_no', $request->credit_check_no)->with('vendor', 'customer', 'product')->first();
+            if ($oldCreditCheckerVerification->status != CreditCheckerVerification::FAILED) {
+              return  $this->respondError('You are only allowed to re-initiate a credit check that has not been declined or failed');
+            }
+            $newCreditCheckerVerification =  $oldCreditCheckerVerification->replicate();
+            $newCreditCheckerVerification->created_at = Carbon::now();
+            $newCreditCheckerVerification->updated_at = Carbon::now();
+            $newCreditCheckerVerification->status = CreditCheckerVerification::PENDING;
+            $newCreditCheckerVerification->reason = null;
+            $newCreditCheckerVerification->processed_by = null;
+            $newCreditCheckerVerification->processed_at = null;
+            $newCreditCheckerVerification->save();
+            if ($request->has('documents')) {
+                $documents = $request->documents;
+                $customerDocuments = [];
+                foreach ($documents as $key => $document) {
+                    $customerDocuments[] =  $this->moldDocument($document['name'], $document['url']);
+                }
+                $newCreditCheckerVerification->documents()->saveMany($customerDocuments);
+            }
+            $customer = $newCreditCheckerVerification->customer;
+            $vendor = $newCreditCheckerVerification->vendor;
+            $product = $newCreditCheckerVerification->product;
+            $this->sendCreditCheckMailToAdmin($customer, $vendor, $product, $newCreditCheckerVerification);
+            return $this->respondSuccess(['credit_check_verification' => $newCreditCheckerVerification], 'Credit check verification re-initiated');
         } catch (\Throwable $th) {
             Log::error($th);
             return $this->respondError('An error ocurred while try to initiate credit check');
@@ -133,7 +176,7 @@ class CreditCheckerVerificationController extends Controller
         }
     }
 
-    
+
 
     public function moldDocument($documentName, $documentUrl)
     {

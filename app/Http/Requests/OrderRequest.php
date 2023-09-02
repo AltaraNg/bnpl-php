@@ -49,6 +49,9 @@ class OrderRequest extends FormRequest
             'documents' =>  ['sometimes', 'array', 'min:1'],
             'documents.*.url' => ['required', 'string'],
             'documents.*.name' => ['required', 'string'],
+            'has_document' => ['sometimes', 'string', Rule::in(['yes', 'no'])],
+            'business_type_id' => ['required', 'integer' ,'exists:business_types,id'],
+            'fixed_repayment' => ['sometimes', 'boolean']
         ];
     }
 
