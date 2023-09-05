@@ -127,6 +127,7 @@ class OrderController extends Controller
             "repayment_duration_id" => $orderRequest->repayment_duration_id,
             "repayment" => $orderRequest->repayment,
             "down_payment" => $orderRequest->down_payment,
+            "down_payment_rate_id" => $orderRequest->down_payment_rate_id,
             "financed_by" => Order::ALTARA_BNPL,
             "product_price" => $orderRequest->cost_price,
             "fixed_repayment" => $orderRequest->fixed_repayment,
