@@ -170,7 +170,9 @@ class CreditCheckerVerificationController extends Controller
             if (Auth::check() && !$isInProduction) {
                 $creditCheckerMail = auth()->user()->email ?  auth()->user()->email : $creditCheckerMail;
             }
+            Log::info("Mail about to be sent to Credit checker");
             Notification::route('mail', $creditCheckerMail)->notify(new PendingCreditCheckNotification($customer, $vendor, $product, $creditCheckerVerification));
+            Log::info("Mail is sent to Credit checker");
         } catch (\Throwable $th) {
             Log::error($th);
         }
