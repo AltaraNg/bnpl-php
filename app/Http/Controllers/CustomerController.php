@@ -51,6 +51,7 @@ class CustomerController extends Controller
             'user_id' => $request->user()->id,
             'state' => $request->input('state'),
             'city' => $request->input('city'),
+            'branch_id' => 1, //Set branch to ikoyi by default
             ...$this->setNotNullableFields(),
         ];
         $customer = $this->customerRepository->create($data);
